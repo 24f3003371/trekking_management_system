@@ -1,70 +1,13 @@
 <template>
   <div class="login-page d-flex align-items-center justify-content-center min-vh-100 p-3 p-md-4">
     <div class="login-container glass-panel d-flex flex-column flex-lg-row overflow-hidden w-100 fade-in">
-      <!-- Left Panel: Brand and Role Selection -->
-      <div class="brand-panel d-flex flex-column justify-content-between p-4 p-md-5">
-        <div>
-          <div class="d-flex align-items-center gap-2 mb-3">
-            <i class="bi bi-triangle-half text-green rotate-brand fs-3"></i>
-            <span class="fw-bold tracking-wider fs-3 text-white font-display">TrekFlow</span>
-          </div>
-          <h2 class="h4 text-white-50 mb-4 fw-normal text-uppercase tracking-wide font-display" style="font-size: 0.85rem; letter-spacing: 0.1em;">
-            Trekking Management Application
-          </h2>
-        </div>
+      
 
-        <div class="my-4">
-          <p class="text-white-50 fs-6 fw-semibold mb-3 text-uppercase tracking-wider" style="font-size: 0.75rem;">Roles</p>
-          <div class="role-selector-list d-flex flex-column gap-2">
-            <button 
-              @click="selectRole('admin')" 
-              class="btn-role d-flex align-items-center gap-3 text-start"
-              :class="{ active: selectedRole === 'admin' }">
-              <i class="bi bi-shield-lock-fill"></i>
-              <div>
-                <div class="role-title">Admin</div>
-                <div class="role-desc">Manage treks, staff & trekkers</div>
-              </div>
-            </button>
-            <button 
-              @click="selectRole('staff')" 
-              class="btn-role d-flex align-items-center gap-3 text-start"
-              :class="{ active: selectedRole === 'staff' }">
-              <i class="bi bi-people-fill"></i>
-              <div>
-                <div class="role-title">Trekking Staff</div>
-                <div class="role-desc">Guide treks & manage participants</div>
-              </div>
-            </button>
-            <button 
-              @click="selectRole('trekker')" 
-              class="btn-role d-flex align-items-center gap-3 text-start"
-              :class="{ active: selectedRole === 'trekker' }">
-              <i class="bi bi-compass-fill"></i>
-              <div>
-                <div class="role-title">User (Trekker)</div>
-                <div class="role-desc">Explore & book high alpine treks</div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        <div class="note-footer d-flex gap-2 text-white-50" style="font-size: 0.78rem; line-height: 1.4;">
-          <i class="bi bi-info-circle-fill text-green flex-shrink-0 mt-0.5"></i>
-          <div>
-            <strong>Note:</strong> Only Users (Trekkers) can register themselves.
-            Trekking Staff are created by Admin.
-          </div>
-        </div>
-      </div>
-
-      <!-- Right Panel: Login Form -->
       <div class="form-panel d-flex flex-column justify-content-center p-4 p-md-5">
         <div class="form-wrapper mx-auto w-100">
           <div class="text-center text-lg-start mb-4">
             <h3 class="fw-bold font-display text-white mb-2">Welcome Back!</h3>
-            <p class="text-muted">Login to your account as <span class="text-green text-capitalize fw-semibold">{{ selectedRole }}</span></p>
-          </div>
+             </div>
 
           <div v-if="errorMessage" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger p-3 mb-4 rounded-xl d-flex align-items-center gap-2" role="alert">
             <i class="bi bi-exclamation-triangle-fill"></i>

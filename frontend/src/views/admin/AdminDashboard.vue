@@ -69,7 +69,7 @@
         </div>
 
         <div class="table-responsive">
-          <table class="table custom-table mb-0">
+          <table class=" table custom-table mb-0">
             <thead>
               <tr>
                 <th scope="col">Booking ID</th>

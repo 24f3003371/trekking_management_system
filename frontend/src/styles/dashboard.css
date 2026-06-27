@@ -149,8 +149,24 @@
   letter-spacing: 0.05em;
 }
 
+.custom-table {
+    color: #fff;
+}
+
+.custom-table th {
+    color: #94a3b8;   /* Light gray for headings */
+    background: transparent;
+}
+
 .custom-table td {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  padding: 1rem 0.75rem !important;
-  vertical-align: middle;
+    color: #fff;      /* White text */
+    background: transparent;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+}
+
+.custom-table th:first-child,
+.custom-table td:first-child {
+    padding-left: 1.5rem;
 }
