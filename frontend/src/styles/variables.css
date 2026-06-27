@@ -1,0 +1,24 @@
+:root {
+  --bg-primary: #08111B;
+  --bg-secondary: #0c1a24;
+  --card-bg: rgba(19, 37, 54, 0.45);
+  --primary: #05a85c;
+  --primary-rgb: 5, 168, 92;
+  --primary-hover: #048e4e;
+  --text: #ffffff;
+  --text-secondary: #8e9fae;
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 18px;
+  
+  /* Status Colors */
+  --color-easy: #10b981;
+  --color-moderate: #f59e0b;
+  --color-hard: #ef4444;
+  
+  /* Glass and Shadows */
+  --glass-bg: rgba(13, 27, 42, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glow-shadow: 0 0 25px rgba(5, 168, 92, 0.15);
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --font-display: 'Outfit', 'Inter', sans-serif;
+}

@@ -1,0 +1,11 @@
+.text-green{
+    color:var(--primary);
+}
+
+.bg-card{
+    background:var(--card-bg);
+}
+
+.rounded-xl{
+    border-radius:18px;
+}
