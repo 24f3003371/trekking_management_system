@@ -21,7 +21,7 @@ class Booking(db.Model):
     payment_status=db.Column(db.Enum(PaymentStatus),nullable=False)
     created_at=db.Column(db.DateTime,default=datetime.utcnow,nullable=False)
     update_at=db.Column(db.DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
-    trek=db.relationship("Trek",back_populates='booking')
+    trek=db.relationship("Trek",back_populates="booking")
     user=db.relationship("User",back_populates="booking")
     def __repr__(self) -> str:
             return f"Booking {self.name}"

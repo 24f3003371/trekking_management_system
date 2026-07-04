@@ -1,6 +1,6 @@
 from enum import Enum
 from datetime import datetime
-form werkzeug.security import generate_password_hash , check_password_hash
+from werkzeug.security import generate_password_hash , check_password_hash
 from backend import db 
 
 class Gender(Enum):
@@ -18,7 +18,7 @@ class User(db.Model,):
     __tablename__="user"
 
     id =db.Column(db.Integer,primary_key=True)
-    username=db.Colum(db.String(100),nullable=False)
+    username=db.Column(db.String(100),nullable=False)
     firstname=db.Column(db.String(30))
     lastname=db.Column(db.String(20))
     pass_hash=db.Column(db.String(255),nullable=False)
@@ -35,7 +35,7 @@ class User(db.Model,):
 
 # methods 
     def set_password(self,password):
-    self.password_hash=generate_password_hash(password)
+        self.password_hash=generate_password_hash(password)
 
     def check_password(self,password):
         return check_password_hash(self.password_hash,password)

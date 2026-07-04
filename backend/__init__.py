@@ -6,7 +6,8 @@ from flask_caching import Cache
 from redis import Redis 
 from celery import Celery
 
-from config import LocalDevelopmentConfig
+from backend.config import LocalDevelopmentConfig
+
 
 
 db =SQLAlchemy()
@@ -21,5 +22,9 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     cache.init_app(app)
+    from backend.models import User,Trek,Booking
+    
+    with app.app_context():
+        db.create_all()
 
     return app
