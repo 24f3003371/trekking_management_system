@@ -1,4 +1,5 @@
-from .import Enum,datetime
+from enum import Enum
+from datetime import datetime
 form werkzeug.security import generate_password_hash , check_password_hash
 from backend import db 
 
@@ -29,21 +30,28 @@ class User(db.Model,):
     created_at=db.Column(db.DateTime,default=datetime.utcnow)
     updated_at=db.Column(db.DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
     role=db.Column(db.Enum(Role),nullable=False,default=Role.Trekker)
-
+    trek=db.relationship("Trek",back_populates="user")
+    booking=db.relationship("Booking",back_populates="user")
 
 # methods 
-def set_password(self,password):
+    def set_password(self,password):
     self.password_hash=generate_password_hash(password)
 
-def check_password(self,password):
-    return check_password_hash(self.password_hash,password)
+    def check_password(self,password):
+        return check_password_hash(self.password_hash,password)
 
-def is_admin(self):
-    return  self.role==Role.Admin
+    def is_admin(self):
+        return  self.role==Role.Admin
 
-def is_staff(self):
-    return self.role==Role.Staff
+    def is_staff(self):
+        return self.role==Role.Staff
 
-def is_trekker(self):
-    return self.role==Role.Trekker
+    def is_trekker(self):
+        return self.role==Role.Trekker
+
+    #dunder method
+    def __repr__(self) -> str:
+        return f"User {self.name}"
+
+
 

@@ -1,5 +1,6 @@
 from backend import db 
-from .import Enum,datetime
+from enum import Enum
+from datetime import datetime
 
 class Difficulty(Enum):
     Easy="easy"
@@ -26,3 +27,7 @@ class Trek (db.Model):
     start_date=db.Column(db.Date,nullable=False)
     end_date=db.Column(db.Date,nullable=False)
     staff_id=db.Column(db.Integer,db.ForeignKey("user.id"),nullable=False)
+    user=db.relationship("User",back_populates="trek")
+    booking=db.relationship("Booking",back_populates="trek")
+    def __repr__(self) -> str:
+            return f"Trek {self.name}"
