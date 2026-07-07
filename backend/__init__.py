@@ -22,9 +22,5 @@ def create_app():
     db.init_app(app)
     jwt.init_app(app)
     cache.init_app(app)
-    from backend.models import User,Trek,Booking
-    
-    with app.app_context():
-        db.create_all()
-
+   
     return app
