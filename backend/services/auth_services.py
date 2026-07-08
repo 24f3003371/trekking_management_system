@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token
 
 def register_user(data):
 
-    existing_user=User.query.filter_by(email=data["email"]).first()
+    existing_user=User.query.filter(email=data["email"]).first()
 
     if existing_user:
         return {"message":"Email already exists"},400
