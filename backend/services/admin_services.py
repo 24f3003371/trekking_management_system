@@ -13,7 +13,7 @@ def admin_dashboard():
 #staff management
 
 def create_staff(data):
-    existing_user=User.query.filter((User.email=data["email"]) | (User.username==data["username"])).first()
+    existing_user=User.query.filter((Use.email==data["email"]) | (User.username==data["username"])).first()
 
     if existing_user:
         return {"message":"username or email already exists"},400
