@@ -102,3 +102,6 @@ def unblacklist_user(id):
     user.is_active=True
     db.commit()
     return {"message":"user is unblaclisted"},200
+
+#update_staff()
+#delete_staff()

@@ -1,7 +1,8 @@
 #reads json , calls services , return json 
 from flask import request , jsonify 
-
+from backend import cache
 from backend.services.auth_services import login_user , register_user
+
 
 def register_controller():
     data = request.get_json()

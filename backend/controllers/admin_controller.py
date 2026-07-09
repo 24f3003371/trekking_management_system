@@ -13,7 +13,10 @@ def create_staff_controller():
 def search_staff_controller():
     keyword=request.args.get("keyword")
     reponse =search_staff(keyword)
-    
+    if isinstance(response,tuple):
+        return jsonify(response[0]),response[1]
+    users=[user.todict() for user in response]
+    return jsonify(users),200
 
 def search_user_controller():
 

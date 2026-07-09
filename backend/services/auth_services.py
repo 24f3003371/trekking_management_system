@@ -41,3 +41,7 @@ def login_user(data):
     return {"access_token":access_token,
             "role":user.role.value} , 200
 
+
+#for future:
+# def change_password():
+# def refresh_token():
