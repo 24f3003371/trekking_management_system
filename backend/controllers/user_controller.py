@@ -14,7 +14,7 @@ from backend.services.user_service import (
 user_bp = Blueprint("user", __name__, url_prefix="/api/user")
 
 
-# -------------------- Book Trek -------------------- #
+
 
 @user_bp.post("/book/<int:trek_id>")
 @jwt_required()
@@ -33,7 +33,7 @@ def book_trek_controller():
     return jsonify(response), 200
 
 
-# -------------------- Edit Profile -------------------- #
+
 
 @user_bp.put("/profile")
 @jwt_required()
@@ -47,7 +47,7 @@ def edit_profile_controller():
     return jsonify(response[0]), response[1]
 
 
-# -------------------- Trekking History -------------------- #
+
 
 @user_bp.get("/trek-history")
 @jwt_required()
@@ -65,8 +65,6 @@ def trekking_history_controller():
     return jsonify(history), 200
 
 
-# -------------------- Available Treks -------------------- #
-
 @user_bp.get("/available-treks")
 @cache.cached(timeout=300)
 def available_trek_controller():
@@ -78,7 +76,6 @@ def available_trek_controller():
     return jsonify(trek_list), 200
 
 
-# -------------------- Booking History -------------------- #
 
 @user_bp.get("/booking-history")
 @jwt_required()
