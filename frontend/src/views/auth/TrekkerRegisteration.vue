@@ -20,16 +20,9 @@
           </p>
         </div>
 
-        <div class="note-footer d-flex gap-2 text-white-50" style="font-size: 0.78rem; line-height: 1.4;">
-          <i class="bi bi-info-circle-fill text-green flex-shrink-0 mt-0.5"></i>
-          <div>
-            <strong>Note:</strong> Only Users (Trekkers) can register themselves.
-            Trekking Staff are created by Admin.
-          </div>
-        </div>
-      </div>
+      
 
-      <!-- Right Panel: Registration Form -->
+      
       <div class="form-panel d-flex flex-column justify-content-center p-4 p-md-5">
         <div class="form-wrapper mx-auto w-100">
           <div class="text-center text-lg-start mb-4">
