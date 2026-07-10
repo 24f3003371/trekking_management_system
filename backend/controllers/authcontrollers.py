@@ -2,7 +2,7 @@
 from flask import request , jsonify ,Blueprint
 from backend import cache
 from backend.services.auth_services import login_user , register_user
-auth_bp=Blueprint("auth",__name__,url_prefix="api/auth")
+auth_bp=Blueprint("auth",__name__,url_prefix="/api/auth")
 
 @auth_bp.post("/register")
 def register_controller():
