@@ -4,7 +4,7 @@ from datetime import datetime
 class BookingStatus(Enum):
     Booked="booked"
     Cancelled="cancelled"
-    Completed="completed"
+    Pending="pending"
 
 class PaymentStatus(Enum):
     Pending="pending"
