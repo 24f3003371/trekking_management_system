@@ -7,5 +7,5 @@ class TrekStaff(db.Model):
     staff_id=db.Column(db.Integer,db.ForeignKey("staff.id"),nullable=False)
     assigned_at=db.Column(db.DateTime,default=datetime.utcnow())
     assigned_by=db.Column(db.Integer,db.ForeingKey("user.id"),nullable=False)
-    trek=db.relationship("Trek",back_populates="trekstaff")
-    staff=db.relationship("User",back_populates="trekstaff")
+    trek=db.relationship("Trek",back_populates="user")
+    staff=db.relationship("User",back_populates="trek",foreign_keys=[staff_id])
