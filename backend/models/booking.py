@@ -5,6 +5,7 @@ class BookingStatus(Enum):
     Booked="booked"
     Cancelled="cancelled"
     Pending="pending"
+    Completed="completed"
 
 class PaymentStatus(Enum):
     Pending="pending"

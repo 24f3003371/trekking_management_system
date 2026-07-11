@@ -101,9 +101,9 @@ const selectRole = (role) => {
   }
 };
 
-const handleLogin = () => {
+const handleLogin = async () => {
   errorMessage.value = '';
-  const result = store.login(email.value, password.value);
+  const result = await store.login(email.value, password.value);
   if (result.success) {
     if (result.user.role === 'admin') {
       router.push('/AdminDashboard');

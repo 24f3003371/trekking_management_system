@@ -22,7 +22,7 @@ admin_bp = Blueprint("admin", __name__, url_prefix="/api/admin")
 def admin_dash_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     response = admin_dashboard()
@@ -35,7 +35,7 @@ def admin_dash_controller():
 def create_staff_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     data = request.get_json()
@@ -51,7 +51,7 @@ def create_staff_controller():
 def search_user_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     keyword = request.args.get("keyword")
@@ -71,7 +71,7 @@ def search_user_controller():
 def search_staff_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     keyword = request.args.get("keyword")
@@ -92,7 +92,7 @@ def search_staff_controller():
 def search_treks_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     keyword = request.args.get("keyword")
@@ -113,7 +113,7 @@ def search_treks_controller():
 def all_staff_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     staff = all_staff()
@@ -129,7 +129,7 @@ def all_staff_controller():
 def assign_trek_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     data = request.get_json()
@@ -148,7 +148,7 @@ def assign_trek_controller():
 def remove_staff_controller():
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     data = request.get_json()
@@ -165,7 +165,7 @@ def remove_staff_controller():
 def blacklist_controller(user_id):
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     response, status = blacklist_user(user_id)
@@ -178,7 +178,7 @@ def blacklist_controller(user_id):
 def unblacklist_controller(user_id):
     claims = get_jwt()
 
-    if claims.get("role") != "Admin":
+    if claims.get("role") != "admin":
         return jsonify({"message": "Unauthorized"}), 403
 
     response, status = unblacklist_user(user_id)

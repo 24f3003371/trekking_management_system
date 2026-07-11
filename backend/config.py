@@ -7,6 +7,6 @@ class LocalDevelopmentConfig(Config):
     SQLALCHEMY_DATABASE_URI="sqlite:///trekking.sqlite3"
     JWT_SECRET_KEY="NIHARIKA-JINNI-KEY"
     CACHE_TYPE="RedisCache"
-    CACHE_REDIS_TYPE="localhost"
+    CACHE_REDIS_HOST="localhost"
     CACHE_REDIS_PORT="6379"
     CACHE_DEFAULT_TIMEOUT="300"

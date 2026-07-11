@@ -18,8 +18,8 @@ user_bp = Blueprint("user", __name__, url_prefix="/api/user")
 
 @user_bp.post("/book/<int:trek_id>")
 @jwt_required()
-def book_trek_controller():
-    user_id = get_jwt_identity()
+def book_trek_controller(trek_id):
+    user_id = int(get_jwt_identity())
 
     data = request.get_json()
 

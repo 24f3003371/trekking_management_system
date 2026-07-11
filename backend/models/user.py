@@ -30,15 +30,15 @@ class User(db.Model,):
     created_at=db.Column(db.DateTime,default=datetime.utcnow)
     updated_at=db.Column(db.DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
     role=db.Column(db.Enum(Role),nullable=False,default=Role.Trekker)
-    trek=db.relationship("TrekStaff",back_populates="staff",cascade="all,delete-orphan")
+    trek=db.relationship("TrekStaff",back_populates="staff",cascade="all,delete-orphan",foreign_Keys="TrekStaff.staff_id")
     booking=db.relationship("Booking",back_populates="user")
 
 # methods 
     def set_password(self,password):
-        self.password_hash=generate_password_hash(password)
+        self.pass_hash=generate_password_hash(password)
 
     def check_password(self,password):
-        return check_password_hash(self.password_hash,password)
+        return check_password_hash(self.pass_hash,password)
 
     def is_admin(self):
         return  self.role==Role.Admin
