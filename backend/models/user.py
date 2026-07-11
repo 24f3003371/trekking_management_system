@@ -49,9 +49,24 @@ class User(db.Model,):
     def is_trekker(self):
         return self.role==Role.Trekker
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "firstname": self.firstname,
+            "lastname": self.lastname,
+            "email": self.email,
+            "address": self.address,
+            "phone": self.phone,
+            "gender": self.gender.value if self.gender else None,
+            "is_active": self.is_active,
+            "role": self.role.value if self.role else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
     #dunder method
     def __repr__(self) -> str:
-        return f"User {self.name}"
+        return f"User {self.username}"
 
 
 

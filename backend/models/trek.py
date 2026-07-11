@@ -31,3 +31,18 @@ class Trek (db.Model):
     booking=db.relationship("Booking",back_populates="trek",cascade="all,delete-orphan")
     def __repr__(self) -> str:
             return f"Trek {self.name}"
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "location": self.location,
+            "description": self.description,
+            "difficulty": self.difficulty.value if self.difficulty else None,
+            "duration": self.duration,
+            "available_slot": self.available_slot,
+            "status": self.status.value if self.status else None,
+            "start_date": self.start_date.isoformat() if self.start_date else None,
+            "end_date": self.end_date.isoformat() if self.end_date else None,
+            "staff_id": self.staff_id,
+        }
+ 

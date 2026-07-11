@@ -24,5 +24,15 @@ class Booking(db.Model):
     trek=db.relationship("Trek",back_populates="booking")
     user=db.relationship("User",back_populates="booking")
     def __repr__(self) -> str:
-            return f"Booking {self.name}"
+            return f"Booking {self.id}"
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "user_id": self.user_id,
+            "trek_id": self.trek_id,
+            "booking_status": self.booking_status.value if self.booking_status else None,
+            "booking_date": self.booking_date.isoformat() if self.booking_date else None,
+            "payment_status": self.payment_status.value if self.payment_status else None,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
     
