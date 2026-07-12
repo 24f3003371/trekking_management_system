@@ -3,7 +3,6 @@
     <!-- Navbar Component -->
     <Navbar />
 
-    <!-- Hero Section -->
     <header class="hero-section container-fluid d-flex align-items-center position-relative overflow-hidden pt-5">
       <div class="container position-relative z-1 pt-5 pb-5">
         <div class="row align-items-center g-4">
@@ -35,9 +34,11 @@
               </button>
             </div>
           </div>
+        
+    
 
           <!-- Hero Center Column: Interactive Mountain Image -->
-          <div class="col-lg-6 position-relative my-5 my-lg-0 d-flex justify-content-center">
+          <div v-if="activeTrek" class="col-lg-6 position-relative my-5 my-lg-0 d-flex justify-content-center">
             <div class="mountain-viewport position-relative">
               <img 
                 :src="mountainImage" 
@@ -72,7 +73,7 @@
           </div>
 
           <!-- Hero Right Column: Selected Trek Details Panel -->
-          <div class="col-lg-3 hero-corner">
+          <div v-if="activeTrek" class="col-lg-3 hero-corner">
             <div class="card glass-panel border-0 text-white p-4 float-card-glow">
               <!-- Recommended badge -->
               <div class="mb-2" v-if="activeTrek.id === 'T004'">
@@ -134,7 +135,12 @@
               </button>
             </div>
           </div>
+          <div v-if="!activeTrek" class="col-lg-9 text-center text-white-50 py-5">
+            <i class="bi bi-hourglass-split fs-2 d-block mb-2"></i>
+            Loading trek preview...
+          </div>
         </div>
+        
         <!-- Floating Stats Bar (Visible within Hero Viewport) -->
         <div class="row mt-5">
           <div class="col-12">
@@ -210,7 +216,7 @@
           
           <div 
             class="card trek-card border-0 glass-card text-white overflow-hidden h-100 d-flex flex-column justify-content-between cursor-pointer"
-            :class="{ selected: activeTrek.id === trek.id }">
+            :class="{ selected: activeTrek?.id === trek.id }">
             
             <div class="trek-card-img-placeholder d-flex align-items-end p-3 position-relative">
               <div class="trek-image-overlay"></div>
@@ -241,7 +247,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Navbar from '@/components/common/Navbar.vue';
 import { useTrekStore } from '@/store';
 import { useRouter } from 'vue-router';
@@ -251,6 +257,14 @@ import mountainImage from '@/assets/images/mountains/mountain.png';
 
 const store = useTrekStore();
 const router = useRouter();
+
+onMounted(() => {
+  if (!store.treks.length) {
+    store.fetchTreks().catch(() => {
+      // guests / logged-out visitors may not have access yet — fail silently
+    });
+  }
+});
 
 const selectedTrekId = ref('T004'); // Kedarkantha Trek default
 const activeCheckpointIndex = ref(1); // Default Camp 1 reached

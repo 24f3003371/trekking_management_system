@@ -127,7 +127,7 @@
 
 <script setup>
 import { computed } from 'vue';
-// import Sidebar from '@/components/dashboard/Sidebar.vue';
+import Sidebar from '@/components/dashboard/Sidebar.vue';
 import { useTrekStore } from '@/store';
 
 const store = useTrekStore();
