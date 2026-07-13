@@ -12,13 +12,13 @@
           <h1 class="h3 fw-bold mb-1 font-display text-white">
             Manage Trekkers
           </h1>
-          <p class="text-muted text-xs mb-0">
+          <p class="text text-xs mb-0">
             Manage registered trekkers and their access
           </p>
         </div>
         <div class="d-flex align-items-center gap-2">
           <span
-            class="badge bg-green bg-opacity-10 text-green border border-success-subtle text-xs py-2 px-3"
+            class="badge bg-green bg-opacity-10 text-white border border-success-subtle text-xs py-2 px-3"
           >
             Active Trekkers: {{ activeUsersCount }}
           </span>

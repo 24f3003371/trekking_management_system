@@ -12,7 +12,7 @@
           <h1 class="h3 fw-bold mb-1 font-display text-white">
             Trekking Staff
           </h1>
-          <p class="text-muted text-xs mb-0">
+          <p class="text text-xs mb-0">
             Manage registered guides, leaders, and support crew
           </p>
         </div>

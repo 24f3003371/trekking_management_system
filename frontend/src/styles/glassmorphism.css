@@ -42,3 +42,20 @@
 .glass-input::placeholder {
   color: #5d6f7e;
 }
+
+/* Form control overrides for dark mode */
+.form-control,
+.form-control:focus {
+  color: var(--text) !important;
+}
+
+.form-control::placeholder {
+  color: var(--text-secondary) !important;
+  opacity: 0.6;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  box-shadow: 0 0 0 0.25rem rgba(5, 168, 92, 0.15) !important;
+  border-color: var(--primary) !important;
+}

@@ -8,7 +8,7 @@
       >
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Create Trek</h1>
-          <p class="text-muted text-xs mb-0">
+          <p class="text text-xs mb-0">
             Create a new trek and assign it to trekking staff
           </p>
         </div>
@@ -22,7 +22,7 @@
             <h3 class="h5 fw-bold mb-1 text-white font-display">
               Create New Trek
             </h3>
-            <p class="text-muted text-xs mb-0">
+            <p class="text text-xs mb-0">
               Fill in the trek details, route, and staff assignment.
             </p>
           </div>

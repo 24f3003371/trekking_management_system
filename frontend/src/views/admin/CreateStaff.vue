@@ -12,7 +12,7 @@
           <h1 class="h3 fw-bold mb-1 font-display text-white">
             Create Trekking Staff
           </h1>
-          <p class="text-muted text-xs mb-0">
+          <p class="texttext-xs mb-0">
             Register a new guide or coordinator for trek groups
           </p>
         </div>
