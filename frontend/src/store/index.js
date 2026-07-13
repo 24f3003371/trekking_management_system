@@ -29,6 +29,7 @@ export const useTrekStore = defineStore("trek", {
   state: () => ({
     token: localStorage.getItem("token") || null,
     currentUser: JSON.parse(localStorage.getItem("user") || "null"),
+    users: [],
     treks: [],
     bookings: [],
     staff: [],
@@ -102,8 +103,16 @@ export const useTrekStore = defineStore("trek", {
     },
 
     async addTrek(data) {
-      await trekService.createTrek(data);
-      await this.fetchAdminTreks();
+      try {
+        await trekService.createTrek(data);
+        await this.fetchAdminTreks();
+        return { success: true };
+      } catch (err) {
+        return {
+          success: false,
+          message: err.response?.data?.message || "Could not create trek",
+        };
+      }
     },
     async editTrek(id, data) {
       await trekService.updateTrek(id, data);
@@ -161,6 +170,11 @@ export const useTrekStore = defineStore("trek", {
       this.staff = data;
     },
 
+    async fetchUsers() {
+      const { data } = await adminService.searchUsers("");
+      this.users = data;
+    },
+
     async blacklistStaff(id) {
       await adminService.blacklist(id);
       await this.fetchStaff();
@@ -171,9 +185,11 @@ export const useTrekStore = defineStore("trek", {
     },
     async blacklistUser(id) {
       await adminService.blacklist(id);
+      await this.fetchUsers();
     },
     async whitelistUser(id) {
       await adminService.unblacklist(id);
+      await this.fetchUsers();
     },
 
     async fetchDashboard() {

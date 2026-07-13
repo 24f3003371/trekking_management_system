@@ -1,3 +1,4 @@
+import json
 from backend import db 
 from enum import Enum
 from datetime import datetime
@@ -20,6 +21,10 @@ class Trek (db.Model):
     name=db.Column(db.String(100),nullable=False)
     location=db.Column(db.String(100),nullable=False)
     description=db.Column(db.Text)
+    route=db.Column(db.Text)
+    major_stops=db.Column(db.Text)
+    trek_tags=db.Column(db.Text)
+    price=db.Column(db.Float,nullable=False,default=0)
     difficulty=db.Column(db.Enum(Difficulty),nullable=False)
     duration=db.Column(db.Integer,nullable=False)
     available_slot=db.Column(db.Integer,nullable=False)
@@ -32,11 +37,26 @@ class Trek (db.Model):
     def __repr__(self) -> str:
             return f"Trek {self.name}"
     def to_dict(self):
+        def _decode_list(value):
+            if not value:
+                return []
+            if isinstance(value, list):
+                return value
+            try:
+                decoded = json.loads(value)
+                return decoded if isinstance(decoded, list) else []
+            except (TypeError, ValueError):
+                return []
+
         return {
             "id": self.id,
             "name": self.name,
             "location": self.location,
             "description": self.description,
+            "route": self.route,
+            "major_stops": _decode_list(self.major_stops),
+            "trek_tags": _decode_list(self.trek_tags),
+            "price": self.price,
             "difficulty": self.difficulty.value if self.difficulty else None,
             "duration": self.duration,
             "available_slot": self.available_slot,

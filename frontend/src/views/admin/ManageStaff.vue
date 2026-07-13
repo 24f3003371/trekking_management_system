@@ -114,7 +114,7 @@
                 </td>
               </tr>
               <tr v-if="filteredStaff.length === 0">
-                <td colspan="7" class="text-center text-muted py-4">
+                <td colspan="7" class="text-center text-white py-4">
                   No trekking staff members found.
                 </td>
               </tr>
@@ -138,12 +138,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
 import Sidebar from "@/components/dashboard/Sidebar.vue";
 import { useTrekStore } from "@/store";
 
 const store = useTrekStore();
 const searchQuery = ref("");
+
+onMounted(async () => {
+  if (store.staff.length === 0) {
+    await store.fetchStaff();
+  }
+});
 
 const filteredStaff = computed(() => {
   return store.staff.filter((s) => {

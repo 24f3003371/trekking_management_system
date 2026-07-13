@@ -53,7 +53,11 @@ def all_staff():
 
 
 def search_users(keyword):
-    user = User.query.filter((User.username == keyword) | (User.email.ilike(f"%{keyword}%"))).all()
+    query = User.query.filter(User.role == Role.Trekker)
+    if keyword:
+        user = query.filter((User.username.ilike(f"%{keyword}%")) | (User.email.ilike(f"%{keyword}%"))).all()
+    else:
+        user = query.all()
     if not user:
         return {"message": "user does not exist"}, 404
     return user
