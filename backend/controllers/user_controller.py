@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from backend import cache
-from backend.models import PaymentStatus
+from backend.models import PaymentStatus, Booking, BookingStatus
 from backend.services.user_service import (
     available_trek,
     book_trek,
@@ -30,9 +30,26 @@ def book_trek_controller(trek_id):
     if isinstance(response, tuple):
         return jsonify(response[0]), response[1]
 
+    # Invalidate booking cache for this user
+    cache.delete_memoized(booking_history_controller)
+
     return jsonify(response), 200
 
 
+@user_bp.delete("/cancel/<int:booking_id>")
+@jwt_required()
+def cancel_booking_controller(booking_id):
+    """Allow a trekker to cancel their own booking."""
+    user_id = int(get_jwt_identity())
+    from backend import db
+    booking = Booking.query.filter_by(id=booking_id, user_id=user_id).first()
+    if not booking:
+        return jsonify({"message": "Booking not found or not yours"}), 404
+    if booking.booking_status != BookingStatus.Booked:
+        return jsonify({"message": "Only active bookings can be cancelled"}), 400
+    booking.booking_status = BookingStatus.Cancelled
+    db.session.commit()
+    return jsonify({"message": "Booking cancelled successfully"}), 200
 
 
 @user_bp.put("/profile")
@@ -79,7 +96,6 @@ def available_trek_controller():
 
 @user_bp.get("/booking-history")
 @jwt_required()
-@cache.cached(timeout=300)
 def booking_history_controller():
     user_id = get_jwt_identity()
 
@@ -88,6 +104,21 @@ def booking_history_controller():
     if isinstance(response, tuple):
         return jsonify(response[0]), response[1]
 
-    bookings = [booking.to_dict() for booking in response]
+    # Enrich each booking with trek details (name, dates)
+    enriched = []
+    for booking in response:
+        d = booking.to_dict()
+        trek = booking.trek
+        if trek:
+            d["trek_name"] = trek.name
+            d["trek_start_date"] = trek.start_date.isoformat() if trek.start_date else None
+            d["trek_end_date"] = trek.end_date.isoformat() if trek.end_date else None
+            d["trek_location"] = trek.location
+        else:
+            d["trek_name"] = None
+            d["trek_start_date"] = None
+            d["trek_end_date"] = None
+            d["trek_location"] = None
+        enriched.append(d)
 
-    return jsonify(bookings), 200
+    return jsonify(enriched), 200

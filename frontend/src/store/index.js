@@ -162,20 +162,33 @@ export const useTrekStore = defineStore("trek", {
     },
 
     async cancelBooking(bookingId) {
-      // workaround: backend has no dedicated cancel-booking route, reusing the
-      // staff "manage participant" endpoint to flip status to cancelled
-      await trekService.updateParticipantStatus(bookingId, "cancelled");
-      await this.fetchBookingHistory();
+      try {
+        await bookingService.cancelBooking(bookingId);
+        await this.fetchBookingHistory();
+        return { success: true };
+      } catch (err) {
+        const msg = err.response?.data?.message || err.message || 'Cancellation failed';
+        return { success: false, message: msg };
+      }
     },
 
     async fetchBookingHistory() {
       const { data } = await bookingService.getBookingHistory();
-      // Normalize booking_status -> status (capitalize) for consistent usage in views
+      // Normalize backend snake_case fields to camelCase and capitalize status
       this.bookings = data.map(b => ({
         ...b,
+        // user identity
+        userId: b.user_id,
+        // status: capitalize booking_status for uniform use in filters
         status: b.booking_status
           ? b.booking_status.charAt(0).toUpperCase() + b.booking_status.slice(1)
           : b.status || 'Unknown',
+        // enriched trek info from backend
+        trekName: b.trek_name || `Trek #${b.trek_id}`,
+        trekDates: (b.trek_start_date && b.trek_end_date)
+          ? `${b.trek_start_date} → ${b.trek_end_date}`
+          : '—',
+        bookingDate: b.booking_date ? b.booking_date.slice(0, 10) : '—',
       }));
     },
 

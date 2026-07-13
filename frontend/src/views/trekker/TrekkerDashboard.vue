@@ -337,11 +337,16 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import Sidebar from '@/components/dashboard/Sidebar.vue';
 import { useTrekStore } from '@/store';
 
 const store = useTrekStore();
+
+onMounted(async () => {
+  // Always refresh bookings when dashboard loads so the list is current
+  await store.fetchBookingHistory();
+});
 
 const trekkerName = computed(() => store.currentUser?.name || 'Trekker');
 
@@ -351,7 +356,11 @@ const availableTreks = computed(() => {
 
 const myBookings = computed(() => {
   if (!store.currentUser) return [];
-  return store.bookings.filter(b => b.userId === store.currentUser.id && b.status === 'Booked');
+  const uid = store.currentUser.id;
+  // Match both userId (normalised camelCase) and user_id (raw from backend)
+  return store.bookings.filter(b =>
+    (b.userId === uid || b.user_id === uid) && b.status === 'Booked'
+  );
 });
 
 // --- Modal State ---
@@ -415,9 +424,16 @@ const statusBadgeClass = (status) => {
   return 'bg-danger bg-opacity-10 text-danger border border-danger-subtle';
 };
 
-const cancelBooking = (bookingId) => {
+const cancelBooking = async (bookingId) => {
   if (confirm('Are you sure you want to cancel this booking?')) {
-    store.cancelBooking(bookingId);
+    const result = await store.cancelBooking(bookingId);
+    if (!result.success) {
+      if (result.message?.includes('401') || result.message?.toLowerCase().includes('unauthorized') || result.message?.toLowerCase().includes('signature')) {
+        alert('Your session has expired. Please log out and log in again to cancel bookings.');
+      } else {
+        alert('Could not cancel booking: ' + result.message);
+      }
+    }
   }
 };
 </script>

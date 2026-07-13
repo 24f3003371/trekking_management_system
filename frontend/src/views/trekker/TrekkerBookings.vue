@@ -112,7 +112,14 @@ const getTrekById = (trekId) => {
 
 const cancelBooking = async (bookingId) => {
   if (confirm('Are you sure you want to cancel this booking?')) {
-    await store.cancelBooking(bookingId);
+    const result = await store.cancelBooking(bookingId);
+    if (!result.success) {
+      if (result.message?.toLowerCase().includes('401') || result.message?.toLowerCase().includes('unauthorized')) {
+        alert('Your session has expired. Please log out and log in again.');
+      } else {
+        alert('Could not cancel: ' + result.message);
+      }
+    }
   }
 };
 </script>

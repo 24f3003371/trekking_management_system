@@ -7,6 +7,9 @@ export default {
   getBookingHistory() {
     return api.get("/user/booking-history");
   },
+  cancelBooking(bookingId) {
+    return api.delete(`/user/cancel/${bookingId}`);
+  },
   getTrekHistory() {
     return api.get("/user/trek-history");
   },

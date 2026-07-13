@@ -17,8 +17,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response && error.response.status === 401) {
+      // Clear stale credentials
       localStorage.removeItem("token");
       localStorage.removeItem("user");
+      // Redirect to login if not already there
+      if (!window.location.pathname.includes("Login")) {
+        window.location.href = "/Login";
+      }
     }
     return Promise.reject(error);
   },
