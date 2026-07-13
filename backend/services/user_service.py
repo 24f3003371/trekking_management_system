@@ -1,6 +1,6 @@
 from datetime import datetime
 from backend import db
-from backend.models import User, Role, TrekStaff, Trek, BookingStatus, Booking, PaymentStatus
+from backend.models import User, Role, TrekStaff, Trek, BookingStatus, Booking, PaymentStatus, Status
 
 
 def book_trek(user_id, trek_id, payment_status: PaymentStatus):
@@ -10,6 +10,8 @@ def book_trek(user_id, trek_id, payment_status: PaymentStatus):
     trek = Trek.query.get(trek_id)
     if not trek:
         return {"message": "Trek does not exists"}, 404
+    if trek.status != Status.Open:
+        return {"message": "Bookings are only available while the trek is open"}, 400
 
     existing_booking = Booking.query.filter_by(user_id=user_id, trek_id=trek_id, booking_status=BookingStatus.Booked).first()
     if existing_booking:
@@ -83,7 +85,7 @@ def trekking_history(user_id):
 
 
 def available_trek():
-    return Trek.query.filter(Trek.available_slot > 0).all()
+    return Trek.query.filter(Trek.available_slot > 0, Trek.status == Status.Open).all()
 
 
 def booking_history(user_id):

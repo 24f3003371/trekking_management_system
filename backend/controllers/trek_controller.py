@@ -87,6 +87,10 @@ def update_assigned_trek_controller(trek_id):
     response, status = update_assigned_trek(
         int(get_jwt_identity()), trek_id, request.get_json() or {}
     )
+    if status == 200:
+        cache.delete_memoized(get_all_treks)
+        from backend.controllers.user_controller import available_trek_controller
+        cache.delete_memoized(available_trek_controller)
     return jsonify(response), status
 
 
