@@ -8,7 +8,7 @@
       <header class="dashboard-header border-bottom border-secondary-subtle pb-3 mb-4">
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Browse Treks</h1>
-          <p class="text-muted text-xs mb-0">Explore and book from our curated collection of stunning Indian trails</p>
+          <p class="text text-xs mb-0">Explore and book from our curated collection of stunning Indian trails</p>
         </div>
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-compass text-green fs-5"></i>
@@ -53,7 +53,10 @@
           <div class="col-md-6 col-lg-4" v-for="trek in paginatedTreks" :key="trek.id">
             <div class="card trek-card h-100 border-0 glass-card text-white overflow-hidden d-flex flex-column justify-content-between">
               <!-- Visual Header -->
-              <div class="trek-card-img-placeholder d-flex align-items-end p-3 position-relative">
+              <div
+                class="trek-card-img-placeholder d-flex align-items-end p-3 position-relative"
+                :style="trek.image ? { backgroundImage: `url(${trek.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}"
+              >
                 <div class="trek-image-overlay"></div>
                 <div class="position-relative z-1 w-100 d-flex justify-content-between align-items-center">
                   <span class="badge" :class="difficultyBadgeClass(trek.difficulty)">{{ trek.difficulty }}</span>
@@ -129,6 +132,9 @@
           <div class="row g-4">
             <!-- Left Info Panel -->
             <div class="col-md-7">
+              <div v-if="selectedTrek.image" class="mb-3 rounded-xl overflow-hidden border border-secondary border-opacity-20" style="max-height: 220px;">
+                <img :src="selectedTrek.image" class="img-fluid w-100" style="max-height: 220px; object-fit: cover;" alt="Trek Image" />
+              </div>
               <p class="text-white-50 text-xs leading-relaxed mb-4">{{ selectedTrek.description }}</p>
               
               <h4 class="h6 fw-bold text-white mb-2 font-display">Trek Information</h4>
@@ -193,17 +199,33 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import Sidebar from '@/components/dashboard/Sidebar.vue';
 import { useTrekStore } from '@/store';
 
 const store = useTrekStore();
+const route = useRoute();
 
 const searchQuery = ref('');
 const filterDifficulty = ref('');
 const filterLocation = ref('');
 
 const selectedTrek = ref(null);
+
+onMounted(async () => {
+  if (store.treks.length === 0) {
+    await store.fetchTreks();
+  }
+  const trekIdParam = route.query.id;
+  if (trekIdParam) {
+    const trekId = Number(trekIdParam);
+    const trek = store.treks.find(t => t.id === trekId);
+    if (trek) {
+      selectedTrek.value = trek;
+    }
+  }
+});
 
 // Pagination
 const currentPage = ref(1);

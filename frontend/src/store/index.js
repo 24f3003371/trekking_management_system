@@ -90,6 +90,12 @@ export const useTrekStore = defineStore("trek", {
         ...t,
         status: capitalize(t.status),
         difficulty: capitalize(t.difficulty),
+        availableSlots: t.available_slot,
+        slots: t.available_slot,
+        checkpoints: (t.major_stops || []).map((stop, idx) => ({
+          name: stop,
+          elevation: `${idx * 400 + 3400}m`,
+        })),
       }));
     },
 
@@ -99,6 +105,12 @@ export const useTrekStore = defineStore("trek", {
         ...t,
         status: capitalize(t.status),
         difficulty: capitalize(t.difficulty),
+        availableSlots: t.available_slot,
+        slots: t.available_slot,
+        checkpoints: (t.major_stops || []).map((stop, idx) => ({
+          name: stop,
+          elevation: `${idx * 400 + 3400}m`,
+        })),
       }));
     },
 

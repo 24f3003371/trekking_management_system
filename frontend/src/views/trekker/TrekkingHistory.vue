@@ -8,7 +8,7 @@
       <header class="dashboard-header border-bottom border-secondary-subtle pb-3 mb-4">
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Trekking History</h1>
-          <p class="text-muted text-xs mb-0">Record of your completed summits and cancelled bookings</p>
+          <p class="text text-xs mb-0">Record of your completed summits and cancelled bookings</p>
         </div>
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-clock-history text-green fs-5"></i>
@@ -48,7 +48,7 @@
                 </td>
               </tr>
               <tr v-if="historyBookings.length === 0">
-                <td colspan="4" class="text-center text-muted py-5">
+                <td colspan="4" class="text-center  py-5">
                   <i class="bi bi-clock-history fs-2 d-block mb-2 text-white-50"></i>
                   No history records found. Your completed and cancelled treks will appear here.
                 </td>

@@ -65,6 +65,8 @@ def ensure_trek_extra_columns():
             cursor.execute("ALTER TABLE trek ADD COLUMN trek_tags TEXT")
         if "price" not in columns:
             cursor.execute("ALTER TABLE trek ADD COLUMN price REAL DEFAULT 0")
+        if "image" not in columns:
+            cursor.execute("ALTER TABLE trek ADD COLUMN image TEXT")
         connection.commit()
     finally:
         connection.close()

@@ -80,6 +80,7 @@ def create_trek(data):
         start_date=start_date,
         end_date=end_date,
         staff_id=int(staff_id),
+        image=data.get("image"),
     )
     db.session.add(trek)
     db.session.commit()
@@ -113,6 +114,8 @@ def update_trek(trek_id, data):
     trek.available_slot = int(data.get("available_slot", data.get("availableSlots", trek.available_slot)))
     trek.status = Status(_enum_text(data["status"])) if "status" in data else trek.status
     trek.staff_id = int(data.get("staff_id", data.get("staffId", data.get("assignedStaffId", trek.staff_id))))
+    if "image" in data:
+        trek.image = data["image"]
 
     db.session.commit()
     return {"message": "trek updated successfully", "trek": trek.to_dict()}, 200

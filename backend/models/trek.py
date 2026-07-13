@@ -32,6 +32,7 @@ class Trek (db.Model):
     start_date=db.Column(db.Date,nullable=False)
     end_date=db.Column(db.Date,nullable=False)
     staff_id=db.Column(db.Integer,db.ForeignKey("user.id"),nullable=False)
+    image=db.Column(db.Text,nullable=True)
     user=db.relationship("TrekStaff",back_populates="trek",cascade="all,delete-orphan")
     booking=db.relationship("Booking",back_populates="trek",cascade="all,delete-orphan")
     def __repr__(self) -> str:
@@ -64,5 +65,6 @@ class Trek (db.Model):
             "start_date": self.start_date.isoformat() if self.start_date else None,
             "end_date": self.end_date.isoformat() if self.end_date else None,
             "staff_id": self.staff_id,
+            "image": self.image,
         }
  

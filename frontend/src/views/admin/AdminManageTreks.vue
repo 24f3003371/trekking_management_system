@@ -362,6 +362,38 @@
                   placeholder="Provide a brief description of the trekking trail..."
                 ></textarea>
               </div>
+              <div class="col-12">
+                <label class="form-label text-white-50 text-xs">Trek Image (Optional)</label>
+                <div class="d-flex align-items-center gap-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    class="form-control glass-input text-xs d-none"
+                    ref="fileInput"
+                    @change="handleImageUpload"
+                  />
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary text-xs px-3"
+                    @click="fileInput.click()"
+                  >
+                    Choose Image
+                  </button>
+                  <button
+                    type="button"
+                    v-if="form.image"
+                    class="btn btn-outline-danger text-xs px-3"
+                    @click="clearImage"
+                  >
+                    Remove
+                  </button>
+                  <span class="text-white-50 text-xs ms-2" v-if="form.image">Image selected</span>
+                  <span class="text-white-50 text-xs ms-2" v-else>No image chosen (optional)</span>
+                </div>
+                <div v-if="form.image" class="mt-2 rounded-xl overflow-hidden border border-secondary border-opacity-30" style="max-width: 200px;">
+                  <img :src="form.image" class="img-fluid" style="max-height: 120px; object-fit: cover;" alt="Preview" />
+                </div>
+              </div>
               <div class="col-md-4" v-if="isEditing">
                 <label class="form-label text-white-50 text-xs">Status</label>
                 <select
@@ -424,6 +456,7 @@ const form = ref({
   price: "",
   description: "",
   status: "Open",
+  image: "",
 });
 
 const majorStopDraft = ref("");
@@ -511,6 +544,7 @@ const openAddModal = () => {
     price: "",
     description: "",
     status: "Open",
+    image: "",
   };
   showModal.value = true;
 };
@@ -532,8 +566,29 @@ const openEditModal = (trek) => {
     price: trek.price ?? "",
     description: trek.description || "",
     status: trek.status === "Completed" ? "Completed" : "Open",
+    image: trek.image || "",
   };
   showModal.value = true;
+};
+
+const fileInput = ref(null);
+
+const handleImageUpload = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    form.value.image = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+const clearImage = () => {
+  form.value.image = "";
+  if (fileInput.value) {
+    fileInput.value.value = "";
+  }
 };
 
 const addMajorStop = () => {
@@ -585,6 +640,7 @@ const submitForm = async () => {
       price: Number(form.value.price),
       description: form.value.description,
       status: form.value.status,
+      image: form.value.image || null,
     });
   } else {
     await store.addTrek({
@@ -602,6 +658,7 @@ const submitForm = async () => {
       price: Number(form.value.price),
       description: form.value.description,
       status: form.value.status,
+      image: form.value.image || null,
     });
   }
   showModal.value = false;

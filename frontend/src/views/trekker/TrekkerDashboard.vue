@@ -8,7 +8,7 @@
       <header class="dashboard-header border-bottom border-secondary-subtle pb-3 mb-4">
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Welcome, {{ trekkerName }}!</h1>
-          <p class="text-muted text-xs mb-0">Ready for your next high alpine expedition?</p>
+          <p class="text-xs mb-0">Ready for your next high alpine expedition?</p>
         </div>
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-person-fill text-green fs-5"></i>
@@ -112,7 +112,7 @@
                 </td>
               </tr>
               <tr v-if="myBookings.length === 0">
-                <td colspan="6" class="text-center text-muted py-4">
+                <td colspan="6" class="text-center  py-4">
                   <i class="bi bi-journal-x fs-3 d-block mb-2 text-white-50"></i>
                   You haven't booked any treks yet.
                 </td>

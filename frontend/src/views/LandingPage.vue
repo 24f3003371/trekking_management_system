@@ -86,8 +86,12 @@
                 <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle text-xs py-1 px-2">OPEN</span>
               </div>
               
+              <div v-if="activeTrek.image" class="mb-3 rounded-xl overflow-hidden border border-secondary border-opacity-20 animate-fade-in" style="max-height: 120px;">
+                <img :src="activeTrek.image" class="img-fluid w-100" style="max-height: 120px; object-fit: cover;" alt="Trek Image" />
+              </div>
+              
               <div class="text-white-50 text-xs mb-4">
-                <i class="bi bi-geo-alt-fill text-green me-1"></i>{{ activeTrek.location }} • {{ activeTrek.duration }}
+                <i class="bi bi-geo-alt-fill text-green me-1"></i>{{ activeTrek.location }} • {{ activeTrek.duration }} days
               </div>
 
               <!-- Trek stats grid -->
@@ -218,7 +222,10 @@
             class="card trek-card border-0 glass-card text-white overflow-hidden h-100 d-flex flex-column justify-content-between cursor-pointer"
             :class="{ selected: activeTrek?.id === trek.id }">
             
-            <div class="trek-card-img-placeholder d-flex align-items-end p-3 position-relative">
+            <div 
+              class="trek-card-img-placeholder d-flex align-items-end p-3 position-relative"
+              :style="trek.image ? { backgroundImage: `url(${trek.image})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}"
+            >
               <div class="trek-image-overlay"></div>
               <!-- Recommended tag overlay -->
               <span v-if="trek.id === 'T004'" class="badge bg-warning text-dark position-absolute top-2 start-2 text-xs fw-bold shadow-sm" style="z-index: 5;">
@@ -226,7 +233,7 @@
               </span>
               <div class="position-relative z-1 w-100 d-flex justify-content-between align-items-center">
                 <span class="badge" :class="difficultyBadgeClass(trek.difficulty)">{{ trek.difficulty }}</span>
-                <span class="badge bg-dark bg-opacity-70 text-white border border-secondary text-xs">{{ trek.duration }}</span>
+                <span class="badge bg-dark bg-opacity-70 text-white border border-secondary text-xs">{{ trek.duration }} days</span>
               </div>
             </div>
 
@@ -258,19 +265,27 @@ import mountainImage from '@/assets/images/mountains/mountain.png';
 const store = useTrekStore();
 const router = useRouter();
 
-onMounted(() => {
+onMounted(async () => {
   if (!store.treks.length) {
-    store.fetchTreks().catch(() => {
-      // guests / logged-out visitors may not have access yet — fail silently
-    });
+    try {
+      await store.fetchTreks();
+      if (store.treks.length > 0) {
+        selectedTrekId.value = store.treks[0].id;
+      }
+    } catch (err) {
+      // fail silently
+    }
+  } else {
+    selectedTrekId.value = store.treks[0].id;
   }
 });
 
-const selectedTrekId = ref('T004'); // Kedarkantha Trek default
+const selectedTrekId = ref(null);
 const activeCheckpointIndex = ref(1); // Default Camp 1 reached
 
 const activeTrek = computed(() => {
-  return store.treks.find(t => t.id === selectedTrekId.value) || store.treks[3];
+  if (store.treks.length === 0) return null;
+  return store.treks.find(t => t.id === selectedTrekId.value) || store.treks[0];
 });
 
 const popularTreks = computed(() => {
@@ -357,8 +372,8 @@ const viewTrekDetails = (trekId) => {
   if (!store.currentUser) {
     router.push('/Login');
   } else if (store.currentUser.role === 'trekker') {
-    // Navigate to browse page and mock open modal
-    router.push('/BrowseTrekking');
+    // Navigate to browse page and open modal for this trek
+    router.push(`/BrowseTrekking?id=${trekId}`);
   } else {
     // Go to respective dashboard
     router.push(store.currentUser.role === 'admin' ? '/AdminDashboard' : '/StaffDashboard');
