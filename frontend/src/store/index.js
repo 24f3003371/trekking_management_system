@@ -59,9 +59,14 @@ export const useTrekStore = defineStore("trek", {
       }
     },
 
-    async register(name, email, password) {
+    async register(name, email, password, contact) {
       try {
-        await authService.register({ username: name, email, password });
+        await authService.register({
+          username: name,
+          email,
+          password,
+          contact,
+        });
         return { success: true };
       } catch (err) {
         return {

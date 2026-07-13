@@ -11,6 +11,7 @@ def register_user(data):
     user = User(
         username=data['username'],
         email=data['email'],
+        phone=data.get('contact'),
         role=Role.Trekker
     )
     user.set_password(data['password'])
