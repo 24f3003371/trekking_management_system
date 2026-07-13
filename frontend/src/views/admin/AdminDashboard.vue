@@ -30,7 +30,7 @@
 
         <div class="stats-card">
           <div class="stats-info">
-            <h4>Total Users</h4>
+            <h4>Total Trekkers</h4>
             <div class="stats-value text-white">{{ store.totalUsers }}</div>
           </div>
           <div class="stats-icon-wrapper">

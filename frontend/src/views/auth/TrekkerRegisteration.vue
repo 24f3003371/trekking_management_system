@@ -232,10 +232,15 @@ const handleRegister = async () => {
     contact.value,
   );
   if (result.success) {
-    successMessage.value = "Registration successful! Redirecting to login...";
-    setTimeout(() => {
-      router.push("/Login");
-    }, 1500);
+    const loginResult = await store.login(email.value, password.value);
+    if (loginResult.success) {
+      successMessage.value = "Registration successful! Redirecting to your dashboard...";
+      setTimeout(() => {
+        router.push("/TrekkerDashboard");
+      }, 1500);
+    } else {
+      errorMessage.value = "Registration worked, but automatic login failed.";
+    }
   } else {
     errorMessage.value = result.message;
   }
