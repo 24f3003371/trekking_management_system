@@ -10,7 +10,7 @@
       >
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Treks</h1>
-          <p class="text-muted text-xs mb-0">Manage and create hiking routes</p>
+          <p class=" text-xs mb-0">Manage and create hiking routes</p>
         </div>
         <div>
           <router-link
@@ -93,7 +93,7 @@
                     <span>•</span>
                     <span
                       ><i class="bi bi-geo me-1"></i
-                      >{{ trek.route || "No route added" }}</span
+                      >{{  trek.route  || "No route added" }}</span
                     >
                   </div>
                 </td>
@@ -155,6 +155,7 @@
       <div
         v-if="showModal"
         class="glass-modal-backdrop d-flex align-items-center justify-content-center p-3"
+        @click.self="closeModal"
       >
         <div class="glass-modal-container glass-panel p-4 p-md-5 w-100 fade-in">
           <div
@@ -379,7 +380,7 @@
               <button
                 type="button"
                 @click="closeModal"
-                class="btn btn-outline-secondary text-xs px-4"
+                class="btn btn-secondary text-xs px-4"
               >
                 Cancel
               </button>
@@ -652,8 +653,40 @@ const deleteTrek = (trekId) => {
 
 .glass-modal-container {
   max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: rgba(13, 27, 42, 0.95);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.glass-modal-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.glass-modal-container::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.glass-modal-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.glass-modal-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-green {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+}
+
+.btn-green:hover {
+  background-color: var(--primary-hover);
+  border-color: var(--primary-hover);
+  color: #ffffff;
 }
 
 .chip-item {

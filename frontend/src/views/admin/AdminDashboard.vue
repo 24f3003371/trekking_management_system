@@ -63,7 +63,7 @@
       <section class="glass-panel p-4 mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h3 class="h5 fw-bold mb-0 text-white font-display">Recent Bookings</h3>
-          <button @click="resetMockState" class="btn btn-sm btn-outline-secondary text-xs">
+          <button @click="resetMockState" class="btn btn-sm btn-secondary text-xs">
             <i class="bi bi-arrow-clockwise me-1"></i> Reset State
           </button>
         </div>

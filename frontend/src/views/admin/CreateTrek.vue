@@ -71,32 +71,6 @@
             </div>
 
             <div class="col-md-6">
-              <label class="form-label text-white-50 text-xs">Difficulty</label>
-              <select
-                v-model="form.difficulty"
-                class="form-select glass-input text-xs"
-                required
-              >
-                <option value="Easy">Easy</option>
-                <option value="Moderate">Moderate</option>
-                <option value="Hard">Hard</option>
-              </select>
-            </div>
-
-            <div class="col-md-6">
-              <label class="form-label text-white-50 text-xs">Duration</label>
-              <input
-                :value="trekDuration || 'Auto from dates'"
-                type="text"
-                class="form-control glass-input text-xs"
-                readonly
-              />
-              <small class="text-white-50 d-block mt-1 text-xs">
-                Auto-calculated from start and end date.
-              </small>
-            </div>
-
-            <div class="col-md-6">
               <label class="form-label text-white-50 text-xs">Start Date</label>
               <input
                 v-model="form.startDate"
@@ -114,6 +88,30 @@
                 class="form-control glass-input text-xs"
                 required
               />
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-white-50 text-xs">Difficulty</label>
+              <select
+                v-model="form.difficulty"
+                class="form-select glass-input text-xs"
+                required
+              >
+                <option value="Easy">Easy</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label text-white-50 text-xs">Duration</label>
+              <input
+                :value="trekDuration || 'Auto from dates'"
+                type="text"
+                class="form-control glass-input text-xs"
+                readonly
+              />
+              <small class="text-white-50 d-block mt-1 text-xs">
+                Auto-calculated from start and end date.
+              </small>
             </div>
 
             <div class="col-md-6">
