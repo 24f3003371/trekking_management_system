@@ -30,7 +30,7 @@ class User(db.Model,):
     created_at=db.Column(db.DateTime,default=datetime.utcnow)
     updated_at=db.Column(db.DateTime,default=datetime.utcnow,onupdate=datetime.utcnow)
     role=db.Column(db.Enum(Role),nullable=False,default=Role.Trekker)
-    trek=db.relationship("TrekStaff",back_populates="staff",cascade="all,delete-orphan",foreign_Keys="TrekStaff.staff_id")
+    trek=db.relationship("TrekStaff",back_populates="staff",cascade="all,delete-orphan",foreign_keys="TrekStaff.staff_id")
     booking=db.relationship("Booking",back_populates="user")
 
 # methods 
