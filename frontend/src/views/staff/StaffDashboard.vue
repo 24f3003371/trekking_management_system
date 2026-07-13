@@ -118,7 +118,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import Sidebar from '@/components/dashboard/Sidebar.vue';
 import { useTrekStore } from '@/store';
 import { useRouter } from 'vue-router';
@@ -126,15 +126,25 @@ import { useRouter } from 'vue-router';
 const store = useTrekStore();
 const router = useRouter();
 
-const staffName = computed(() => store.currentUser?.name || 'Trek Leader');
+const staffName = computed(() => store.currentUser?.name || store.currentUser?.username || 'Trek Leader');
+
+onMounted(async () => {
+  await store.fetchAdminTreks();
+  const staffId = store.currentUser?.id;
+  const trekIds = store.treks
+    .filter(trek => Number(trek.assignedStaffId) === Number(staffId))
+    .map(trek => trek.id);
+  await Promise.all(trekIds.map(trekId => store.fetchParticipants(trekId)));
+});
 
 const assignedTreks = computed(() => {
   if (!store.currentUser) return [];
-  return store.treks.filter(t => t.assignedStaffId === store.currentUser.id);
+  return store.treks.filter(t => Number(t.assignedStaffId) === Number(store.currentUser.id));
 });
 
 const getParticipantCount = (trekId) => {
-  return store.bookings.filter(b => b.trekId === trekId && b.status === 'Booked').length;
+  return (store.participantsByTrek[trekId] || [])
+    .filter(booking => booking.status === 'Booked').length;
 };
 
 const totalParticipantsCount = computed(() => {

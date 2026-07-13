@@ -19,6 +19,9 @@ export default {
   updateTrek(id, data) {
     return api.put(`/treks/${id}`, data);
   },
+  updateAssignedTrek(id, data) {
+    return api.patch(`/treks/${id}/staff`, data);
+  },
   deleteTrek(id) {
     return api.delete(`/treks/${id}`);
   },

@@ -32,6 +32,7 @@ export const useTrekStore = defineStore("trek", {
     users: [],
     treks: [],
     bookings: [],
+    participantsByTrek: {},
     staff: [],
     totalTreks: 0,
     totalUsers: 0,
@@ -99,6 +100,10 @@ export const useTrekStore = defineStore("trek", {
         ...t,
         status: capitalize(t.status),
         difficulty: capitalize(t.difficulty),
+        assignedStaffId: t.staff_id,
+        startDate: t.start_date,
+        endDate: t.end_date,
+        progress: t.progress ?? 0,
         availableSlots: t.available_slot,
         slots: t.available_slot,
         checkpoints: (t.major_stops || []).map((stop, idx) => ({
@@ -114,6 +119,10 @@ export const useTrekStore = defineStore("trek", {
         ...t,
         status: capitalize(t.status),
         difficulty: capitalize(t.difficulty),
+        assignedStaffId: t.staff_id,
+        startDate: t.start_date,
+        endDate: t.end_date,
+        progress: t.progress ?? 0,
         availableSlots: t.available_slot,
         slots: t.available_slot,
         checkpoints: (t.major_stops || []).map((stop, idx) => ({
@@ -163,8 +172,29 @@ export const useTrekStore = defineStore("trek", {
 
     async cancelBooking(bookingId) {
       try {
-        await bookingService.cancelBooking(bookingId);
-        await this.fetchBookingHistory();
+        const { data } = await bookingService.cancelBooking(bookingId);
+        const cancelledBooking = data.booking;
+
+        // Reflect success immediately. Refresh afterwards to keep all enriched
+        // booking details in sync without making a successful cancellation look
+        // like a failure if that follow-up request has a temporary issue.
+        if (cancelledBooking) {
+          this.bookings = this.bookings.map((booking) =>
+            booking.id === bookingId
+              ? {
+                  ...booking,
+                  ...cancelledBooking,
+                  userId: cancelledBooking.user_id,
+                  status: 'Cancelled',
+                }
+              : booking,
+          );
+        }
+        try {
+          await this.fetchBookingHistory();
+        } catch (refreshError) {
+          console.warn('Booking was cancelled, but the booking list could not be refreshed.', refreshError);
+        }
         return { success: true };
       } catch (err) {
         const msg = err.response?.data?.message || err.message || 'Cancellation failed';
@@ -174,22 +204,21 @@ export const useTrekStore = defineStore("trek", {
 
     async fetchBookingHistory() {
       const { data } = await bookingService.getBookingHistory();
-      // Normalize backend snake_case fields to camelCase and capitalize status
-      this.bookings = data.map(b => ({
-        ...b,
-        // user identity
-        userId: b.user_id,
-        // status: capitalize booking_status for uniform use in filters
-        status: b.booking_status
-          ? b.booking_status.charAt(0).toUpperCase() + b.booking_status.slice(1)
-          : b.status || 'Unknown',
-        // enriched trek info from backend
-        trekName: b.trek_name || `Trek #${b.trek_id}`,
-        trekDates: (b.trek_start_date && b.trek_end_date)
-          ? `${b.trek_start_date} → ${b.trek_end_date}`
-          : '—',
-        bookingDate: b.booking_date ? b.booking_date.slice(0, 10) : '—',
-      }));
+      this.bookings = data.map(normalizeBooking);
+    },
+
+    async fetchParticipants(trekId) {
+      const { data } = await trekService.getParticipants(trekId);
+      this.participantsByTrek = {
+        ...this.participantsByTrek,
+        [trekId]: data.map(normalizeBooking),
+      };
+    },
+
+    async updateAssignedTrek(trekId, data) {
+      const { data: response } = await trekService.updateAssignedTrek(trekId, data);
+      await this.fetchAdminTreks();
+      return response;
     },
 
     async createStaff(payload) {
@@ -254,4 +283,21 @@ export const useTrekStore = defineStore("trek", {
 function capitalize(str) {
   if (!str) return str;
   return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function normalizeBooking(booking) {
+  return {
+    ...booking,
+    userId: booking.user_id,
+    trekId: booking.trek_id,
+    userName: booking.user_name || booking.username || 'Trekker',
+    status: booking.booking_status
+      ? capitalize(booking.booking_status)
+      : booking.status || 'Unknown',
+    trekName: booking.trek_name || `Trek #${booking.trek_id}`,
+    trekDates: (booking.trek_start_date && booking.trek_end_date)
+      ? `${booking.trek_start_date} → ${booking.trek_end_date}`
+      : '—',
+    bookingDate: booking.booking_date ? booking.booking_date.slice(0, 10) : '—',
+  };
 }

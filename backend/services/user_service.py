@@ -30,6 +30,31 @@ def book_trek(user_id, trek_id, payment_status: PaymentStatus):
     return {"message": booking.booking_status.value, "booking": booking.to_dict()}
 
 
+def cancel_booking(user_id, booking_id):
+    """Cancel an active booking and return its reserved trek place."""
+    booking = Booking.query.filter_by(id=booking_id, user_id=user_id).first()
+    if not booking:
+        return {"message": "Booking not found or not yours"}, 404
+    if booking.booking_status != BookingStatus.Booked:
+        return {"message": "Only active bookings can be cancelled"}, 400
+
+    try:
+        booking.booking_status = BookingStatus.Cancelled
+        # A paid, booked trek always consumed one slot in book_trek(). Restore
+        # it in the same transaction so capacity and booking status agree.
+        if booking.trek:
+            booking.trek.available_slot += 1
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        return {"message": "Could not cancel booking. Please try again."}, 500
+
+    return {
+        "message": "Booking cancelled successfully",
+        "booking": booking.to_dict(),
+    }
+
+
 def edit_profile(user_id, data):
     user = User.query.get(user_id)
     if not user:

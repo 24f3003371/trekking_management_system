@@ -59,30 +59,15 @@
                 </div>
               </div>
 
-              <!-- Progress Controller -->
-              <div class="mb-4" v-if="activeTrek.status === 'Open'">
-                <label class="form-label text-white-50 text-xs d-flex justify-content-between mb-2">
-                  <span>Trek Progress Checkpoints:</span>
-                  <span class="fw-bold text-green font-display">{{ progressValue }}%</span>
-                </label>
-                
-                <input 
-                  type="range" 
-                  class="form-range custom-range" 
-                  min="0" 
-                  max="100" 
-                  step="25" 
-                  v-model="progressValue"
-                />
-                
-                <!-- Checkpoint indicators -->
-                <div class="d-flex justify-content-between text-xs text-muted px-1 mt-1 font-display" style="font-size: 0.65rem;">
-                  <span>Base</span>
-                  <span>Camp 1</span>
-                  <span>Camp 2</span>
-                  <span>Camp 3</span>
-                  <span>Summit</span>
-                </div>
+              <!-- Trek settings -->
+              <div class="mb-4" v-if="activeTrek.status !== 'Completed'">
+                <label class="form-label text-white-50 text-xs mb-2">Available Slots</label>
+                <input v-model.number="availableSlots" type="number" min="0" class="form-control bg-transparent border-secondary text-white text-xs mb-3" />
+                <label class="form-label text-white-50 text-xs mb-2">Trek Status</label>
+                <select v-model="trekStatus" class="form-select bg-transparent border-secondary text-white text-xs">
+                  <option value="open" class="bg-dark">Open</option>
+                  <option value="closed" class="bg-dark">Closed</option>
+                </select>
               </div>
 
               <div class="mb-4" v-else>
@@ -94,9 +79,9 @@
             </div>
 
             <!-- Actions buttons -->
-            <div class="d-flex flex-column gap-2 mt-4 pt-3 border-top border-secondary-subtle" v-if="activeTrek.status === 'Open'">
-              <button @click="updateProgress" class="btn btn-green w-100 py-2 text-xs font-display">
-                Update Trek Checkpoint
+            <div class="d-flex flex-column gap-2 mt-4 pt-3 border-top border-secondary-subtle" v-if="activeTrek.status !== 'Completed'">
+              <button @click="saveTrekSettings" :disabled="isSaving" class="btn btn-green w-100 py-2 text-xs font-display">
+                {{ isSaving ? 'Saving…' : 'Save Trek Details' }}
               </button>
               <button @click="markAsCompleted" class="btn btn-outline-success w-100 py-2 text-xs font-display">
                 Mark as Completed / Summit Completed
@@ -168,36 +153,48 @@ const router = useRouter();
 
 const selectedTrekId = ref(localStorage.getItem('staff_active_trek_id') || '');
 const progressValue = ref(0);
+const availableSlots = ref(0);
+const trekStatus = ref('open');
+const isSaving = ref(false);
 
 const assignedTreks = computed(() => {
   if (!store.currentUser) return [];
-  return store.treks.filter(t => t.assignedStaffId === store.currentUser.id);
+  return store.treks.filter(t => Number(t.assignedStaffId) === Number(store.currentUser.id));
 });
 
 const activeTrek = computed(() => {
   if (!selectedTrekId.value && assignedTreks.value.length > 0) {
     return assignedTreks.value[0];
   }
-  return store.treks.find(t => t.id === selectedTrekId.value);
+  return store.treks.find(t => Number(t.id) === Number(selectedTrekId.value));
 });
 
 const participants = computed(() => {
   if (!activeTrek.value) return [];
-  return store.bookings.filter(b => b.trekId === activeTrek.value.id && b.status !== 'Cancelled');
+  return (store.participantsByTrek[activeTrek.value.id] || [])
+    .filter(booking => booking.status !== 'Cancelled');
 });
 
 // Watch trek changes to update slide progress value
 watch(activeTrek, (newVal) => {
   if (newVal) {
     progressValue.value = newVal.progress;
+    availableSlots.value = newVal.availableSlots;
+    trekStatus.value = newVal.status.toLowerCase();
     selectedTrekId.value = newVal.id;
     localStorage.setItem('staff_active_trek_id', newVal.id);
   }
 }, { immediate: true });
 
-onMounted(() => {
+watch(activeTrek, async (newVal) => {
+  if (newVal) await store.fetchParticipants(newVal.id);
+}, { immediate: true });
+
+onMounted(async () => {
+  await store.fetchAdminTreks();
   if (activeTrek.value) {
     progressValue.value = activeTrek.value.progress;
+    await store.fetchParticipants(activeTrek.value.id);
   }
 });
 
@@ -219,10 +216,20 @@ const formatDate = (dateStr) => {
   return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
-const updateProgress = () => {
+const saveTrekSettings = async () => {
   if (!activeTrek.value) return;
-  store.updateTrekProgress(activeTrek.value.id, progressValue.value);
-  alert(`Trek progress successfully updated to ${progressValue.value}%!`);
+  isSaving.value = true;
+  try {
+    await store.updateAssignedTrek(activeTrek.value.id, {
+      available_slot: availableSlots.value,
+      status: trekStatus.value,
+    });
+    alert('Trek details updated successfully.');
+  } catch (error) {
+    alert(error.response?.data?.message || 'Could not update trek details.');
+  } finally {
+    isSaving.value = false;
+  }
 };
 
 const markAsCompleted = () => {

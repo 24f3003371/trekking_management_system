@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required, get_jwt, get_jwt_identity
 from backend.services.trek_service import (
     create_trek,
     update_trek,
@@ -8,7 +9,8 @@ from backend.services.trek_service import (
     admin_manage_trek_routes,
     participant_list,
     manage_participant_list,
-    mark_trek
+    mark_trek,
+    update_assigned_trek,
 )
 from backend import cache
 
@@ -54,7 +56,6 @@ def get_trek(trek_id):
 
 
 @trek_bp.get("/admin")
-@cache.cached(timeout=300)
 def admin_manage_treks():
     treks = admin_manage_trek_routes()
     return jsonify([trek.to_dict() for trek in treks]), 200
@@ -67,7 +68,26 @@ def participant_list_controller(trek_id):
     if isinstance(result, tuple):
         return jsonify(result[0]), result[1]
 
-    return jsonify([participant.to_dict() for participant in result]), 200
+    participants = []
+    for participant in result:
+        data = participant.to_dict()
+        data["user_name"] = participant.user.username if participant.user else None
+        data["email"] = participant.user.email if participant.user else None
+        participants.append(data)
+
+    return jsonify(participants), 200
+
+
+@trek_bp.patch("/<int:trek_id>/staff")
+@jwt_required()
+def update_assigned_trek_controller(trek_id):
+    if get_jwt().get("role") != "staff":
+        return jsonify({"message": "Unauthorized"}), 403
+
+    response, status = update_assigned_trek(
+        int(get_jwt_identity()), trek_id, request.get_json() or {}
+    )
+    return jsonify(response), status
 
 
 @trek_bp.put("/participants/<int:booking_id>")

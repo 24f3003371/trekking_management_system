@@ -172,3 +172,27 @@ def mark_trek(trek_id):
     return {"message": "trek marked as completed"}, 200
 
 
+def update_assigned_trek(staff_id, trek_id, data):
+    """Let the assigned staff member update their trek's slots or status."""
+    trek = Trek.query.filter_by(id=trek_id, staff_id=staff_id).first()
+    if not trek:
+        return {"message": "Trek not found or not assigned to you"}, 404
+
+    if "available_slot" in data:
+        try:
+            slots = int(data["available_slot"])
+        except (TypeError, ValueError):
+            return {"message": "Available slots must be a whole number"}, 400
+        if slots < 0:
+            return {"message": "Available slots cannot be negative"}, 400
+        trek.available_slot = slots
+
+    if "status" in data:
+        try:
+            trek.status = Status(_enum_text(data["status"]))
+        except ValueError:
+            return {"message": "Invalid trek status"}, 400
+
+    db.session.commit()
+    return {"message": "Trek updated successfully", "trek": trek.to_dict()}, 200
+

@@ -2,10 +2,11 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from backend import cache
-from backend.models import PaymentStatus, Booking, BookingStatus
+from backend.models import PaymentStatus
 from backend.services.user_service import (
     available_trek,
     book_trek,
+    cancel_booking,
     booking_history,
     edit_profile,
     trekking_history
@@ -30,8 +31,9 @@ def book_trek_controller(trek_id):
     if isinstance(response, tuple):
         return jsonify(response[0]), response[1]
 
-    # Invalidate booking cache for this user
-    cache.delete_memoized(booking_history_controller)
+    # The available-treks endpoint is cached and a successful booking changes
+    # its slot count.
+    cache.delete_memoized(available_trek_controller)
 
     return jsonify(response), 200
 
@@ -41,15 +43,14 @@ def book_trek_controller(trek_id):
 def cancel_booking_controller(booking_id):
     """Allow a trekker to cancel their own booking."""
     user_id = int(get_jwt_identity())
-    from backend import db
-    booking = Booking.query.filter_by(id=booking_id, user_id=user_id).first()
-    if not booking:
-        return jsonify({"message": "Booking not found or not yours"}), 404
-    if booking.booking_status != BookingStatus.Booked:
-        return jsonify({"message": "Only active bookings can be cancelled"}), 400
-    booking.booking_status = BookingStatus.Cancelled
-    db.session.commit()
-    return jsonify({"message": "Booking cancelled successfully"}), 200
+    response = cancel_booking(user_id, booking_id)
+
+    if isinstance(response, tuple):
+        return jsonify(response[0]), response[1]
+
+    # Cancelling frees a place, so invalidate the cached availability too.
+    cache.delete_memoized(available_trek_controller)
+    return jsonify(response), 200
 
 
 @user_bp.put("/profile")
