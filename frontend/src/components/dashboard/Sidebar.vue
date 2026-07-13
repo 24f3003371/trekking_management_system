@@ -84,6 +84,13 @@
           <i class="bi bi-compass"></i> Browse Treks
         </router-link>
         <router-link
+          to="/TrekkerBookings"
+          class="nav-item-btn"
+          :class="{ active: isActive('/TrekkerBookings') }"
+        >
+          <i class="bi bi-journal-bookmark-fill"></i> Bookings
+        </router-link>
+        <router-link
           to="/TrekkingHistory"
           class="nav-item-btn"
           :class="{ active: isActive('/TrekkingHistory') }"

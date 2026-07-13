@@ -18,6 +18,7 @@ import StaffManageTreks from "@/views/staff/StaffManageTreks.vue";
 import TrekkerDashboard from "@/views/trekker/TrekkerDashboard.vue";
 import BrowseTrekking from "@/views/trekker/BrowseTrekking.vue";
 import TrekkingHistory from "@/views/trekker/TrekkingHistory.vue";
+import TrekkerBookings from "@/views/trekker/TrekkerBookings.vue";
 
 const routes = [
   { path: "/", name: "LandingPage", component: LandingPage },
@@ -97,6 +98,12 @@ const routes = [
     path: "/TrekkingHistory",
     name: "TrekkingHistory",
     component: TrekkingHistory,
+    meta: { requiresAuth: true, role: "trekker" },
+  },
+  {
+    path: "/TrekkerBookings",
+    name: "TrekkerBookings",
+    component: TrekkerBookings,
     meta: { requiresAuth: true, role: "trekker" },
   },
 ];

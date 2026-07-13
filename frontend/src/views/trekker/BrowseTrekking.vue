@@ -118,79 +118,233 @@
       </section>
 
       <!-- High Fidelity Trek Details Modal -->
-      <div v-if="selectedTrek" class="glass-modal-backdrop d-flex align-items-center justify-content-center p-3">
+      <div v-if="selectedTrek" class="glass-modal-backdrop d-flex align-items-center justify-content-center p-3" @click.self="closeDetails">
         <div class="glass-modal-container glass-panel p-4 p-md-5 w-100 fade-in overflow-y-auto" style="max-height: 90vh;">
-          <div class="d-flex justify-content-between align-items-start border-bottom border-secondary-subtle pb-3 mb-4">
-            <div>
-              <span class="badge mb-2" :class="difficultyBadgeClass(selectedTrek.difficulty)">{{ selectedTrek.difficulty }}</span>
-              <h3 class="h4 fw-bold text-white font-display mb-0">{{ selectedTrek.name }}</h3>
-              <div class="text-white-50 text-xs mt-1"><i class="bi bi-geo-alt-fill text-green me-1"></i>{{ selectedTrek.location }}</div>
+          
+          <!-- Step 1: Trek Details View -->
+          <div v-if="currentStep === 'details'">
+            <div class="d-flex justify-content-between align-items-start border-bottom border-secondary-subtle pb-3 mb-4">
+              <div>
+                <span class="badge mb-2" :class="difficultyBadgeClass(selectedTrek.difficulty)">{{ selectedTrek.difficulty }}</span>
+                <h3 class="h4 fw-bold text-white font-display mb-0">{{ selectedTrek.name }}</h3>
+                <div class="text-white-50 text-xs mt-1"><i class="bi bi-geo-alt-fill text-green me-1"></i>{{ selectedTrek.location }}</div>
+              </div>
+              <button @click="closeDetails" class="btn-close btn-close-white"></button>
             </div>
-            <button @click="closeDetails" class="btn-close btn-close-white"></button>
+
+            <div class="row g-4">
+              <!-- Left Info Panel -->
+              <div class="col-md-7">
+                <div v-if="selectedTrek.image" class="mb-3 rounded-xl overflow-hidden border border-secondary border-opacity-20" style="max-height: 220px;">
+                  <img :src="selectedTrek.image" class="img-fluid w-100" style="max-height: 220px; object-fit: cover;" alt="Trek Image" />
+                </div>
+                <p class="text-white-50 text-xs leading-relaxed mb-4">{{ selectedTrek.description }}</p>
+                
+                <h4 class="h6 fw-bold text-white mb-2 font-display">Trek Information</h4>
+                <div class="d-flex flex-column gap-2 mb-4 bg-dark bg-opacity-20 p-3 rounded-xl border border-secondary border-opacity-10 text-xs">
+                  <div class="d-flex justify-content-between">
+                    <span class="text-white-50">Duration:</span>
+                    <span class="fw-semibold text-white">{{ selectedTrek.duration }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span class="text-white-50">Trek Start Date:</span>
+                    <span class="fw-semibold text-white">{{ formatDate(selectedTrek.startDate) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span class="text-white-50">Trek End Date:</span>
+                    <span class="fw-semibold text-white">{{ formatDate(selectedTrek.endDate) }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <span class="text-white-50">Available Slots:</span>
+                    <span class="fw-semibold text-white">{{ selectedTrek.availableSlots }} left / {{ selectedTrek.slots }} total</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Elevation Checkpoint Panel -->
+              <div class="col-md-5">
+                <h4 class="h6 fw-bold text-white mb-3 font-display">Trail Map & Elevation Points</h4>
+                
+                <div class="checkpoint-timeline ps-3 position-relative border-start border-secondary border-opacity-30 ms-2">
+                  <div class="checkpoint-node mb-3 position-relative" v-for="(node, index) in selectedTrek.checkpoints" :key="node.name">
+                    <div class="timeline-dot bg-green"></div>
+                    <div class="text-xs fw-semibold text-white">{{ node.name }}</div>
+                    <div class="text-muted text-xs">{{ node.elevation }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price & Booking Footer -->
+            <div class="d-flex flex-sm-row justify-content-between align-items-center gap-3 mt-4 pt-3 border-top border-secondary-subtle">
+              <div>
+                <div class="text-muted text-xs">Total Trekking Fee (all inclusive)</div>
+                <div class="fw-bold text-green font-display fs-4">₹{{ selectedTrek.price.toLocaleString('en-IN') }}</div>
+              </div>
+              
+              <button
+                v-if="store.bookedTrekIds.has(selectedTrek.id)"
+                disabled
+                class="btn btn-booked px-5 py-2.5 text-xs font-display fw-bold rounded-xl">
+                <i class="bi bi-check-circle-fill me-1"></i> Already Booked
+              </button>
+              <button 
+                v-else-if="selectedTrek.availableSlots > 0"
+                @click="goToPayment"
+                class="btn btn-green px-5 py-2.5 text-xs font-display fw-bold rounded-xl">
+                Book Trek Now
+              </button>
+              <button 
+                v-else
+                disabled
+                class="btn btn-outline-secondary px-5 py-2.5 text-xs font-display fw-bold rounded-xl text-white-50 border-secondary border-opacity-30">
+                Not Available / Fully Booked
+              </button>
+            </div>
           </div>
 
-          <div class="row g-4">
-            <!-- Left Info Panel -->
-            <div class="col-md-7">
-              <div v-if="selectedTrek.image" class="mb-3 rounded-xl overflow-hidden border border-secondary border-opacity-20" style="max-height: 220px;">
-                <img :src="selectedTrek.image" class="img-fluid w-100" style="max-height: 220px; object-fit: cover;" alt="Trek Image" />
+          <!-- Step 2: Secure Payment View -->
+          <div v-else-if="currentStep === 'payment'">
+            <div class="d-flex justify-content-between align-items-start border-bottom border-secondary-subtle pb-3 mb-4">
+              <div>
+                <span class="badge bg-green bg-opacity-10 text-green border border-success-subtle mb-2 text-xs">SECURE CHECKOUT</span>
+                <h3 class="h4 fw-bold text-white font-display mb-0">Confirm Booking & Pay</h3>
+                <div class="text-white-50 text-xs mt-1">{{ selectedTrek.name }} • ₹{{ selectedTrek.price.toLocaleString('en-IN') }}</div>
               </div>
-              <p class="text-white-50 text-xs leading-relaxed mb-4">{{ selectedTrek.description }}</p>
-              
-              <h4 class="h6 fw-bold text-white mb-2 font-display">Trek Information</h4>
-              <div class="d-flex flex-column gap-2 mb-4 bg-dark bg-opacity-20 p-3 rounded-xl border border-secondary border-opacity-10 text-xs">
-                <div class="d-flex justify-content-between">
-                  <span class="text-white-50">Duration:</span>
-                  <span class="fw-semibold text-white">{{ selectedTrek.duration }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-white-50">Trek Start Date:</span>
-                  <span class="fw-semibold text-white">{{ formatDate(selectedTrek.startDate) }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-white-50">Trek End Date:</span>
-                  <span class="fw-semibold text-white">{{ formatDate(selectedTrek.endDate) }}</span>
-                </div>
-                <div class="d-flex justify-content-between">
-                  <span class="text-white-50">Available Slots:</span>
-                  <span class="fw-semibold text-white">{{ selectedTrek.availableSlots }} left / {{ selectedTrek.slots }} total</span>
-                </div>
-              </div>
+              <button @click="closeDetails" class="btn-close btn-close-white" :disabled="isPaying"></button>
             </div>
 
-            <!-- Right Elevation Checkpoint Panel -->
-            <div class="col-md-5">
-              <h4 class="h6 fw-bold text-white mb-3 font-display">Trail Map & Elevation Points</h4>
-              
-              <div class="checkpoint-timeline ps-3 position-relative border-start border-secondary border-opacity-30 ms-2">
-                <div class="checkpoint-node mb-3 position-relative" v-for="(node, index) in selectedTrek.checkpoints" :key="node.name">
-                  <div class="timeline-dot bg-green"></div>
-                  <div class="text-xs fw-semibold text-white">{{ node.name }}</div>
-                  <div class="text-muted text-xs">{{ node.elevation }}</div>
+            <!-- Success message screen -->
+            <div v-if="paymentSuccess" class="text-center py-5">
+              <div class="mb-4">
+                <i class="bi bi-check-circle-fill text-green" style="font-size: 4rem;"></i>
+              </div>
+              <h4 class="h5 text-white fw-bold font-display mb-2">Booking Confirmed!</h4>
+              <p class="text-white-50 text-xs px-4 mb-4">Your payment of ₹{{ selectedTrek.price.toLocaleString('en-IN') }} has been processed successfully. You can track preparation status, staff contacts, and gear guides from your dashboard.</p>
+              <button @click="closeDetails" class="btn btn-green px-5 py-2 text-xs font-display fw-bold rounded-xl">
+                Close & Go to Dashboard
+              </button>
+            </div>
+
+            <!-- Choose Payment Method form -->
+            <div v-else class="row g-4">
+              <!-- Left Column: Choose Method -->
+              <div class="col-md-5 border-end border-secondary border-opacity-20 pr-md-4">
+                <h4 class="h6 fw-bold text-white mb-3 font-display">Payment Method</h4>
+                <div class="d-flex flex-column gap-2">
+                  <button 
+                    type="button"
+                    class="btn text-start text-xs p-3 rounded-xl border d-flex align-items-center gap-3 w-100"
+                    :class="paymentMethod === 'card' ? 'btn-green-outline' : 'btn-dark-outline'"
+                    @click="paymentMethod = 'card'"
+                  >
+                    <i class="bi bi-credit-card fs-5 text-white"></i>
+                    <div>
+                      <div class="fw-bold text-white">Credit / Debit Card</div>
+                      <div class="text-white-50 text-xxs">Visa, Mastercard, RuPay</div>
+                    </div>
+                  </button>
+                  
+                  <button 
+                    type="button"
+                    class="btn text-start text-xs p-3 rounded-xl border d-flex align-items-center gap-3 w-100"
+                    :class="paymentMethod === 'upi' ? 'btn-green-outline' : 'btn-dark-outline'"
+                    @click="paymentMethod = 'upi'"
+                  >
+                    <i class="bi bi-phone-vibrate fs-5 text-white"></i>
+                    <div>
+                      <div class="fw-bold text-white">UPI Payment</div>
+                      <div class="text-white-50 text-xxs">Google Pay, PhonePe, UPI ID</div>
+                    </div>
+                  </button>
+
+                  <button 
+                    type="button"
+                    class="btn text-start text-xs p-3 rounded-xl border d-flex align-items-center gap-3 w-100"
+                    :class="paymentMethod === 'netbanking' ? 'btn-green-outline' : 'btn-dark-outline'"
+                    @click="paymentMethod = 'netbanking'"
+                  >
+                    <i class="bi bi-bank fs-5 text-white"></i>
+                    <div>
+                      <div class="fw-bold text-white">Net Banking</div>
+                      <div class="text-white-50 text-xxs">Instant Bank Transfer</div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right Column: Dummy Billing Details -->
+              <div class="col-md-7">
+                <h4 class="h6 fw-bold text-white mb-3 font-display">Billing Details</h4>
+                
+                <!-- Credit Card -->
+                <div v-if="paymentMethod === 'card'" class="d-flex flex-column gap-3">
+                  <div>
+                    <label class="form-label text-white-50 text-xs">Cardholder Name</label>
+                    <input type="text" class="form-control glass-input text-xs" v-model="dummyCard.name" />
+                  </div>
+                  <div>
+                    <label class="form-label text-white-50 text-xs">Card Number</label>
+                    <input type="text" class="form-control glass-input text-xs" v-model="dummyCard.number" placeholder="XXXX XXXX XXXX XXXX" />
+                  </div>
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <label class="form-label text-white-50 text-xs">Expiry Date</label>
+                      <input type="text" class="form-control glass-input text-xs" v-model="dummyCard.expiry" placeholder="MM/YY" />
+                    </div>
+                    <div class="col-6">
+                      <label class="form-label text-white-50 text-xs">CVV</label>
+                      <input type="password" class="form-control glass-input text-xs" v-model="dummyCard.cvv" placeholder="123" />
+                    </div>
+                  </div>
+                </div>
+
+                <!-- UPI -->
+                <div v-else-if="paymentMethod === 'upi'" class="d-flex flex-column gap-3">
+                  <div>
+                    <label class="form-label text-white-50 text-xs">UPI Address ID</label>
+                    <input type="text" class="form-control glass-input text-xs" v-model="dummyUpi" placeholder="username@upi" />
+                  </div>
+                  <div class="text-white-50 text-xs bg-dark bg-opacity-20 p-3 rounded-xl border border-secondary border-opacity-10">
+                    <i class="bi bi-shield-check text-green me-2"></i>A secure dummy notification request will be simulated. Click Pay to proceed.
+                  </div>
+                </div>
+
+                <!-- Netbanking -->
+                <div v-else-if="paymentMethod === 'netbanking'" class="d-flex flex-column gap-3">
+                  <div>
+                    <label class="form-label text-white-50 text-xs">Select Preferred Bank</label>
+                    <select class="form-select glass-input text-xs text-white">
+                      <option class="bg-dark">State Bank of India</option>
+                      <option class="bg-dark">HDFC Bank</option>
+                      <option class="bg-dark">ICICI Bank</option>
+                      <option class="bg-dark">Axis Bank</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="d-flex gap-3 mt-4 pt-3 border-top border-secondary border-opacity-20">
+                  <button 
+                    type="button" 
+                    class="btn btn-outline-secondary text-xs px-4" 
+                    :disabled="isPaying"
+                    @click="currentStep = 'details'"
+                  >
+                    Back
+                  </button>
+                  <button 
+                    type="button" 
+                    class="btn btn-green text-xs px-5 flex-grow-1 fw-bold d-flex align-items-center justify-content-center gap-2" 
+                    :disabled="isPaying"
+                    @click="processPayment"
+                  >
+                    <span v-if="isPaying" class="spinner-border spinner-border-sm" role="status"></span>
+                    <span>{{ isPaying ? 'Processing Dummy Payment...' : `Pay ₹${selectedTrek.price.toLocaleString('en-IN')}` }}</span>
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- Price & Booking Footer -->
-          <div class="d-flex flex-sm-row justify-content-between align-items-center gap-3 mt-4 pt-3 border-top border-secondary-subtle">
-            <div>
-              <div class="text-muted text-xs">Total Trekking Fee (all inclusive)</div>
-              <div class="fw-bold text-green font-display fs-4">₹{{ selectedTrek.price.toLocaleString('en-IN') }}</div>
-            </div>
-            
-            <button 
-              v-if="selectedTrek.availableSlots > 0"
-              @click="confirmBooking(selectedTrek.id)"
-              class="btn btn-green px-5 py-2.5 text-xs font-display fw-bold rounded-xl">
-              Book Trek Now
-            </button>
-            <button 
-              v-else
-              disabled
-              class="btn btn-outline-secondary px-5 py-2.5 text-xs font-display fw-bold rounded-xl text-white-50 border-secondary border-opacity-30">
-              Not Available / Fully Booked
-            </button>
           </div>
         </div>
       </div>
@@ -212,6 +366,19 @@ const filterDifficulty = ref('');
 const filterLocation = ref('');
 
 const selectedTrek = ref(null);
+const currentStep = ref('details'); // 'details' or 'payment'
+const paymentMethod = ref('card');
+const isPaying = ref(false);
+const paymentSuccess = ref(false);
+
+const dummyCard = ref({
+  number: '4111 2222 3333 4444',
+  expiry: '12/28',
+  cvv: '123',
+  name: 'John Doe'
+});
+
+const dummyUpi = ref('trekker@okaxis');
 
 onMounted(async () => {
   if (store.treks.length === 0) {
@@ -274,10 +441,34 @@ const viewDetails = (trek) => {
 
 const closeDetails = () => {
   selectedTrek.value = null;
+  currentStep.value = 'details';
+  paymentSuccess.value = false;
+  isPaying.value = false;
 };
 
-const confirmBooking = (trekId) => {
-  const result = store.bookTrek(trekId);
+const goToPayment = () => {
+  currentStep.value = 'payment';
+};
+
+const processPayment = async () => {
+  if (isPaying.value) return;
+  isPaying.value = true;
+  
+  // Simulate payment gateway delay (1.5 seconds)
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  const result = await store.bookTrek(selectedTrek.value.id);
+  isPaying.value = false;
+  
+  if (result.success) {
+    paymentSuccess.value = true;
+  } else {
+    alert(result.message);
+  }
+};
+
+const confirmBooking = async (trekId) => {
+  const result = await store.bookTrek(trekId);
   if (result.success) {
     alert("Trek successfully booked! You can monitor details and start dates from the dashboard.");
     closeDetails();
@@ -402,5 +593,36 @@ const confirmBooking = (trekId) => {
 
 .checkpoint-node {
   padding-left: 0.5rem;
+}
+
+.btn-green-outline {
+  background: rgba(5, 168, 92, 0.08) !important;
+  border: 1px solid var(--primary) !important;
+  color: #ffffff !important;
+  text-align: left;
+}
+
+.btn-dark-outline {
+  background: rgba(13, 27, 42, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: var(--text-secondary) !important;
+  text-align: left;
+}
+
+.btn-dark-outline:hover {
+  background: rgba(13, 27, 42, 0.6) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+.text-xxs {
+  font-size: 0.7rem;
+}
+
+.btn-booked {
+  background: rgba(5, 168, 92, 0.12);
+  border: 1px solid rgba(5, 168, 92, 0.35);
+  color: var(--primary);
+  cursor: default;
 }
 </style>

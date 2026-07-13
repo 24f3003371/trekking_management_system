@@ -216,7 +216,7 @@
           v-for="trek in popularTreks" 
           :key="trek.id" 
           class="popular-card-item"
-          @click="selectTrek(trek.id)">
+          @click="viewTrekDetails(trek.id)">
           
           <div 
             class="card trek-card border-0 glass-card text-white overflow-hidden h-100 d-flex flex-column justify-content-between cursor-pointer"

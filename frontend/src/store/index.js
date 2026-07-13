@@ -41,6 +41,15 @@ export const useTrekStore = defineStore("trek", {
 
   getters: {
     recentBookings: (state) => [...state.bookings].slice(-5).reverse(),
+    // Set of trek IDs the current user has an active (Booked) booking for
+    bookedTrekIds: (state) => {
+      if (!state.currentUser) return new Set();
+      return new Set(
+        state.bookings
+          .filter(b => (b.status === 'Booked' || b.booking_status === 'booked'))
+          .map(b => b.trek_id)
+      );
+    },
   },
 
   actions: {
@@ -161,7 +170,13 @@ export const useTrekStore = defineStore("trek", {
 
     async fetchBookingHistory() {
       const { data } = await bookingService.getBookingHistory();
-      this.bookings = data;
+      // Normalize booking_status -> status (capitalize) for consistent usage in views
+      this.bookings = data.map(b => ({
+        ...b,
+        status: b.booking_status
+          ? b.booking_status.charAt(0).toUpperCase() + b.booking_status.slice(1)
+          : b.status || 'Unknown',
+      }));
     },
 
     async createStaff(payload) {
