@@ -16,11 +16,7 @@
             <a href="#" class="nav-link active">Home</a>
           </li>
           <li class="nav-item">
-            <router-link v-if="isTrekker" to="/BrowseTrekking" class="nav-link">Treks</router-link>
-            <a v-else href="#popular-treks" class="nav-link">Treks</a>
-          </li>
-          <li class="nav-item">
-            <a href="#map" class="nav-link">Map</a>
+            <a href="#popular-treks" class="nav-link">Trek</a>
           </li>
           <li class="nav-item">
             <a href="#how-it-works" class="nav-link">How It Works</a>

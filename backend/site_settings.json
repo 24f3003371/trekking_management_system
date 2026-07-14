@@ -1,0 +1,24 @@
+{
+  "show_stats": true,
+  "about_us": "TrekFlow is India's premier trekking management platform. We connect trekkers with professional trek leaders for safe, memorable adventures across the Himalayas and beyond.",
+  "how_it_works": [
+    {
+      "desc": "heheheh",
+      "step": 1,
+      "title": "Browse Treks"
+    },
+    {
+      "desc": "Reserve your spot with our simple booking system.",
+      "step": 2,
+      "title": "Book & Pay"
+    },
+    {
+      "desc": "Join your group, follow your trek leader, and summit!",
+      "step": 3,
+      "title": "Trek & Conquer"
+    }
+  ],
+  "contact_email": "hii@trekflow.com",
+  "contact_phone": "+91 98765 43210",
+  "contact_address": "TrekFlow HQ, Manali, Himachal Pradesh, India"
+}

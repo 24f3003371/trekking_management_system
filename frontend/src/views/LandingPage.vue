@@ -146,7 +146,7 @@
         </div>
         
         <!-- Floating Stats Bar (Visible within Hero Viewport) -->
-        <div class="row mt-5">
+        <div class="row mt-5" v-if="showStats">
           <div class="col-12">
             <div class="glass-panel py-3 px-md-5">
               <div class="row text-center g-3">
@@ -154,7 +154,7 @@
                   <div class="d-flex align-items-center justify-content-center gap-3">
                     <i class="bi bi-compass fs-3 text-green"></i>
                     <div class="text-start">
-                      <div class="fw-bold fs-5 font-display text-white">120+</div>
+                      <div class="fw-bold fs-5 font-display text-white">{{ siteStats.treks_available }}+</div>
                       <div class="text-white-50 text-xs">Treks Available</div>
                     </div>
                   </div>
@@ -163,7 +163,7 @@
                   <div class="d-flex align-items-center justify-content-center gap-3">
                     <i class="bi bi-people-fill fs-3 text-green"></i>
                     <div class="text-start">
-                      <div class="fw-bold fs-5 font-display text-white">5,000+</div>
+                      <div class="fw-bold fs-5 font-display text-white">{{ siteStats.total_trekkers }}+</div>
                       <div class="text-white-50 text-xs">Happy Trekkers</div>
                     </div>
                   </div>
@@ -172,17 +172,17 @@
                   <div class="d-flex align-items-center justify-content-center gap-3">
                     <i class="bi bi-flag-fill fs-3 text-green"></i>
                     <div class="text-start">
-                      <div class="fw-bold fs-5 font-display text-white">300+</div>
+                      <div class="fw-bold fs-5 font-display text-white">{{ siteStats.treks_completed }}+</div>
                       <div class="text-white-50 text-xs">Treks Completed</div>
                     </div>
                   </div>
                 </div>
                 <div class="col-6 col-md-3">
                   <div class="d-flex align-items-center justify-content-center gap-3">
-                    <i class="bi bi-star-fill fs-3 text-green"></i>
+                    <i class="bi bi-journal-bookmark-fill fs-3 text-green"></i>
                     <div class="text-start">
-                      <div class="fw-bold fs-5 font-display text-white">4.8/5</div>
-                      <div class="text-white-50 text-xs">User Rating</div>
+                      <div class="fw-bold fs-5 font-display text-white">{{ siteStats.total_bookings }}+</div>
+                      <div class="text-white-50 text-xs">Active Bookings</div>
                     </div>
                   </div>
                 </div>
@@ -250,6 +250,91 @@
         </div>
       </div>
     </section>
+
+    <!-- About Us Section -->
+    <section id="about" class="py-5 container">
+      <div class="glass-panel p-5 text-center">
+        <h2 class="h3 fw-bold font-display text-white mb-3">About Us</h2>
+        <div class="mx-auto bg-green my-3" style="width: 60px; height: 3px;"></div>
+        <p class="text-white-50 leading-relaxed fs-6 mx-auto" style="max-width: 800px;">
+          {{ siteSettings.about_us || 'Loading about us details...' }}
+        </p>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-5 container">
+      <div class="text-center mb-5">
+        <h2 class="h3 fw-bold font-display text-white mb-2">How It Works</h2>
+        <p class="text-muted text-xs">Embark on your journey in three simple steps</p>
+      </div>
+      <div class="row g-4">
+        <div v-for="step in siteSettings.how_it_works" :key="step.step" class="col-md-4">
+          <div class="glass-panel p-4 h-100 text-center position-relative overflow-hidden">
+            <span class="position-absolute top-0 end-0 px-3 py-1 bg-green bg-opacity-10 text-green font-display fw-bold text-sm border-bottom border-start border-secondary border-opacity-10" style="border-bottom-left-radius: 12px;">
+              0{{ step.step }}
+            </span>
+            <div class="stats-icon-wrapper mx-auto mb-3" style="width: 50px; height: 50px;">
+              <i class="bi bi-geo-fill text-green fs-4"></i>
+            </div>
+            <h3 class="h6 fw-bold text-white mb-2 font-display">{{ step.title }}</h3>
+            <p class="text-white-50 text-xs mb-0">{{ step.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Info Section -->
+    <section id="contact" class="py-5 container mb-5">
+      <div class="glass-panel p-5">
+        <div class="row g-4 align-items-center">
+          <div class="col-lg-6">
+            <h2 class="h3 fw-bold font-display text-white mb-3">Get in Touch</h2>
+            <p class="text-white-50 text-xs mb-4">Have questions about treks, safety, or custom group bookings? We are here to help.</p>
+            <div class="d-flex flex-column gap-3">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-envelope text-green fs-5"></i>
+                <div>
+                  <div class="text-white-50 text-xs">Email us at</div>
+                  <a :href="'mailto:' + siteSettings.contact_email" class="fw-semibold text-white text-decoration-none text-xs">{{ siteSettings.contact_email }}</a>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-telephone text-green fs-5"></i>
+                <div>
+                  <div class="text-white-50 text-xs">Call us at</div>
+                  <a :href="'tel:' + siteSettings.contact_phone" class="fw-semibold text-white text-decoration-none text-xs">{{ siteSettings.contact_phone }}</a>
+                </div>
+              </div>
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-geo-alt text-green fs-5"></i>
+                <div>
+                  <div class="text-white-50 text-xs">Visit office</div>
+                  <div class="fw-semibold text-white text-xs">{{ siteSettings.contact_address }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <form @submit.prevent class="d-flex flex-column gap-3">
+              <div>
+                <label class="form-label text-white-50 text-xs mb-1">Your Name</label>
+                <input type="text" class="form-control bg-transparent border-secondary text-white text-xs" placeholder="John Doe" />
+              </div>
+              <div>
+                <label class="form-label text-white-50 text-xs mb-1">Your Email</label>
+                <input type="email" class="form-control bg-transparent border-secondary text-white text-xs" placeholder="john@example.com" />
+              </div>
+              <div>
+                <label class="form-label text-white-50 text-xs mb-1">Message</label>
+                <textarea rows="3" class="form-control bg-transparent border-secondary text-white text-xs" placeholder="Write your message..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-green py-2 text-xs font-display fw-bold">Send Message</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -258,6 +343,7 @@ import { ref, computed, onMounted } from 'vue';
 import Navbar from '@/components/common/Navbar.vue';
 import { useTrekStore } from '@/store';
 import { useRouter } from 'vue-router';
+import api from '@/services/api';
 
 // Import mountain image renamed previously
 import mountainImage from '@/assets/images/mountains/mountain.png';
@@ -265,7 +351,36 @@ import mountainImage from '@/assets/images/mountains/mountain.png';
 const store = useTrekStore();
 const router = useRouter();
 
+// Dynamic stats from the public API
+const siteStats = ref({ treks_available: 0, total_trekkers: 0, treks_completed: 0, total_bookings: 0 });
+const showStats = ref(true);
+
+const siteSettings = ref({
+  about_us: '',
+  how_it_works: [],
+  contact_email: '',
+  contact_phone: '',
+  contact_address: ''
+});
+
 onMounted(async () => {
+  // Fetch public stats for the homepage
+  try {
+    const { data } = await api.get('/public/stats');
+    siteStats.value = data;
+    showStats.value = data.show_stats !== false;
+  } catch (e) {
+    // stats will just show 0
+  }
+
+  // Fetch site settings for homepage content blocks
+  try {
+    const { data } = await api.get('/public/site-settings');
+    siteSettings.value = data;
+  } catch (e) {
+    // defaults or empty is handled by template
+  }
+
   if (!store.treks.length) {
     try {
       await store.fetchTreks();

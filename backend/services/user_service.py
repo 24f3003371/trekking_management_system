@@ -1,6 +1,6 @@
 from datetime import datetime
 from backend import db
-from backend.models import User, Role, TrekStaff, Trek, BookingStatus, Booking, PaymentStatus, Status
+from backend.models import User, Role, TrekStaff, Trek, BookingStatus, Booking, PaymentStatus, Status, Gender
 
 
 def book_trek(user_id, trek_id, payment_status: PaymentStatus):
@@ -71,7 +71,22 @@ def edit_profile(user_id, data):
         user.email = data["email"]
     if "phone" in data: user.phone = data["phone"]
     if "address" in data: user.address = data["address"]
-    if "gender" in data: user.gender = data["gender"]
+    if "gender" in data:
+        val = data["gender"]
+        if val:
+            val_clean = str(val).strip().lower()
+            if val_clean == "male":
+                user.gender = Gender.Male
+            elif val_clean == "female":
+                user.gender = Gender.Female
+            elif val_clean == "other":
+                user.gender = Gender.Other
+            elif val_clean == "prefer_not_to_say":
+                user.gender = Gender.Prefer_not_to_say
+            else:
+                user.gender = None
+        else:
+            user.gender = None
     user.updated_at = datetime.utcnow()
     db.session.commit()
     return {"message": "Profile updated successfully", "user": user.to_dict()}, 200

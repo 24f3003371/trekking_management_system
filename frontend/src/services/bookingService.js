@@ -16,4 +16,7 @@ export default {
   editProfile(data) {
     return api.put("/user/profile", data);
   },
+  getProfile() {
+    return api.get("/user/profile");
+  },
 };

@@ -8,7 +8,7 @@
       <header class="dashboard-header border-bottom border-secondary-subtle pb-3 mb-4">
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Manage Trek Group</h1>
-          <p class="text-muted text-xs mb-0">Update trail progress checkpoints and monitor participant roster</p>
+          <p class="text text-xs mb-0">Update trail progress checkpoints and monitor participant roster</p>
         </div>
         <div>
           <router-link to="/StaffDashboard" class="btn btn-outline-secondary d-flex align-items-center gap-2 text-xs py-2 px-3">
@@ -35,7 +35,7 @@
                 <h3 class="h4 fw-bold text-white font-display mb-0">{{ activeTrek.name }}</h3>
                 <span class="badge" :class="difficultyBadgeClass(activeTrek.difficulty)">{{ activeTrek.difficulty }}</span>
               </div>
-              <p class="text-muted text-xs mb-4"><i class="bi bi-geo-alt-fill text-green me-1"></i>{{ activeTrek.location }}</p>
+              <p class=" text-s mb-4"><i class="bi bi-geo-alt-fill text-green me-1"></i>{{ activeTrek.location }}</p>
 
               <!-- Trek Specs -->
               <div class="d-flex flex-column gap-3 mb-4 bg-dark bg-opacity-20 p-3 rounded-xl border border-secondary border-opacity-10">
@@ -120,7 +120,7 @@
                     </td>
                   </tr>
                   <tr v-if="participants.length === 0">
-                    <td colspan="4" class="text-center text-muted py-5">
+                    <td colspan="4" class="text-center  py-5">
                       <i class="bi bi-people fs-2 d-block mb-2 text-white-50"></i>
                       No participants registered for this trek yet.
                     </td>
@@ -169,8 +169,14 @@ const activeTrek = computed(() => {
   return store.treks.find(t => Number(t.id) === Number(selectedTrekId.value));
 });
 
+const getParticipantCount = (trekId) => {
+  return (store.participantsByTrek[trekId] || [])
+    .filter(booking => booking.status !== 'Cancelled').length;
+};
+
 const participants = computed(() => {
   if (!activeTrek.value) return [];
+  // Show all non-cancelled participants (Booked + Completed)
   return (store.participantsByTrek[activeTrek.value.id] || [])
     .filter(booking => booking.status !== 'Cancelled');
 });
@@ -187,14 +193,18 @@ watch(activeTrek, (newVal) => {
 }, { immediate: true });
 
 watch(activeTrek, async (newVal) => {
-  if (newVal) await store.fetchParticipants(newVal.id);
+  if (newVal) await store.fetchParticipants(newVal.id).catch(() => {});
 }, { immediate: true });
 
 onMounted(async () => {
-  await store.fetchAdminTreks();
-  if (activeTrek.value) {
-    progressValue.value = activeTrek.value.progress;
-    await store.fetchParticipants(activeTrek.value.id);
+  try {
+    await store.fetchAdminTreks();
+    if (activeTrek.value) {
+      progressValue.value = activeTrek.value.progress;
+      await store.fetchParticipants(activeTrek.value.id).catch(() => {});
+    }
+  } catch (err) {
+    console.error("Failed to load trek details on mount:", err);
   }
 });
 
@@ -232,11 +242,17 @@ const saveTrekSettings = async () => {
   }
 };
 
-const markAsCompleted = () => {
+const markAsCompleted = async () => {
   if (!activeTrek.value) return;
   if (confirm("Are you sure you want to mark this trek as completed? All registered bookings will be marked as Completed and participants will receive certificates.")) {
-    store.completeTrek(activeTrek.value.id);
-    progressValue.value = 100;
+    try {
+      await store.completeTrek(activeTrek.value.id);
+      // Re-fetch participants to show updated statuses (Completed instead of Booked)
+      await store.fetchParticipants(activeTrek.value.id);
+      progressValue.value = 100;
+    } catch (error) {
+      alert(error.response?.data?.message || 'Could not mark trek as completed.');
+    }
   }
 };
 </script>

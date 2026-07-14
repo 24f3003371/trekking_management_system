@@ -344,8 +344,11 @@ import { useTrekStore } from '@/store';
 const store = useTrekStore();
 
 onMounted(async () => {
-  // Always refresh bookings when dashboard loads so the list is current
-  await store.fetchBookingHistory();
+  // Always refresh bookings and treks when dashboard loads so they are current
+  await Promise.all([
+    store.fetchBookingHistory(),
+    store.fetchTreks()
+  ]);
 });
 
 const trekkerName = computed(() => store.currentUser?.name || 'Trekker');

@@ -184,3 +184,31 @@ def unblacklist_controller(user_id):
     response, status = unblacklist_user(user_id)
 
     return jsonify(response), status
+
+
+@admin_bp.put("/site-settings")
+@jwt_required()
+def update_site_settings_controller():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"message": "Unauthorized"}), 403
+
+    from backend.controllers.public_controller import _read_settings, _write_settings
+    data = request.get_json()
+    settings = _read_settings()
+    # Update only the keys that were sent
+    for key in ["show_stats", "about_us", "how_it_works", "contact_email", "contact_phone", "contact_address"]:
+        if key in data:
+            settings[key] = data[key]
+    _write_settings(settings)
+    return jsonify({"message": "Settings updated", "settings": settings}), 200
+
+
+@admin_bp.get("/site-settings")
+@jwt_required()
+def get_admin_site_settings():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"message": "Unauthorized"}), 403
+    from backend.controllers.public_controller import _read_settings
+    return jsonify(_read_settings()), 200

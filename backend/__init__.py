@@ -27,10 +27,12 @@ def create_app():
     from backend.controllers.admin_controller import admin_bp
     from backend.controllers.trek_controller import trek_bp
     from backend.controllers.user_controller import user_bp
+    from backend.controllers.public_controller import public_bp
  
     app.register_blueprint(auth_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(trek_bp)
     app.register_blueprint(user_bp)
+    app.register_blueprint(public_bp)
    
     return app

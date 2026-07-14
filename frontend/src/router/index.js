@@ -20,6 +20,9 @@ import BrowseTrekking from "@/views/trekker/BrowseTrekking.vue";
 import TrekkingHistory from "@/views/trekker/TrekkingHistory.vue";
 import TrekkerBookings from "@/views/trekker/TrekkerBookings.vue";
 
+import EditProfile from "@/views/common/EditProfile.vue";
+import AdminSiteSettings from "@/views/admin/AdminSiteSettings.vue";
+
 const routes = [
   { path: "/", name: "LandingPage", component: LandingPage },
   { path: "/Login", name: "Login", component: Login },
@@ -66,6 +69,12 @@ const routes = [
     component: ManageUser,
     meta: { requiresAuth: true, role: "admin" },
   },
+  {
+    path: "/AdminSiteSettings",
+    name: "AdminSiteSettings",
+    component: AdminSiteSettings,
+    meta: { requiresAuth: true, role: "admin" },
+  },
 
   // Staff Routes
   {
@@ -105,6 +114,14 @@ const routes = [
     name: "TrekkerBookings",
     component: TrekkerBookings,
     meta: { requiresAuth: true, role: "trekker" },
+  },
+
+  // Shared routes (all authenticated roles)
+  {
+    path: "/EditProfile",
+    name: "EditProfile",
+    component: EditProfile,
+    meta: { requiresAuth: true },
   },
 ];
 

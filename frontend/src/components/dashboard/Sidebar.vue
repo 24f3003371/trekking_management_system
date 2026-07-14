@@ -49,6 +49,20 @@
         >
           <i class="bi bi-person-lines-fill"></i> Manage Trekkers
         </router-link>
+        <router-link
+          to="/AdminSiteSettings"
+          class="nav-item-btn"
+          :class="{ active: isActive('/AdminSiteSettings') }"
+        >
+          <i class="bi bi-gear"></i> Site Settings
+        </router-link>
+        <router-link
+          to="/EditProfile"
+          class="nav-item-btn"
+          :class="{ active: isActive('/EditProfile') }"
+        >
+          <i class="bi bi-person-circle"></i> Edit Profile
+        </router-link>
       </template>
 
       <template v-else-if="role === 'staff'">
@@ -65,6 +79,13 @@
           :class="{ active: isActive('/StaffManageTreks') }"
         >
           <i class="bi bi-map"></i> Manage Treks
+        </router-link>
+        <router-link
+          to="/EditProfile"
+          class="nav-item-btn"
+          :class="{ active: isActive('/EditProfile') }"
+        >
+          <i class="bi bi-person-circle"></i> Edit Profile
         </router-link>
       </template>
 
@@ -96,6 +117,13 @@
           :class="{ active: isActive('/TrekkingHistory') }"
         >
           <i class="bi bi-clock-history"></i> Trekking History
+        </router-link>
+        <router-link
+          to="/EditProfile"
+          class="nav-item-btn"
+          :class="{ active: isActive('/EditProfile') }"
+        >
+          <i class="bi bi-person-circle"></i> Edit Profile
         </router-link>
       </template>
     </nav>

@@ -116,6 +116,17 @@ def edit_profile_controller():
     return jsonify(response[0]), response[1]
 
 
+@user_bp.get("/profile")
+@jwt_required()
+def get_profile_controller():
+    user_id = get_jwt_identity()
+    from backend.models import User
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"message": "User not found"}), 404
+    return jsonify({"user": user.to_dict()}), 200
+
+
 
 
 @user_bp.get("/trek-history")
