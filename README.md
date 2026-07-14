@@ -1,6 +1,6 @@
 # TrekFlow - Trekking Management Application (V2)
 
-TrekFlow is a modern, responsive web application designed for adventure organizations to manage trekking routes, staff assignments, user bookings, and completed expeditions. It provides tailored experiences for three roles: **Admins**, **Trek Staff**, and **Trekkers (Users)**.
+TrekFlow is a  responsive web application developed by Niharika Soni to manage trekking routes, staff assignments, user bookings, and completed expeditions. It support three users role: **Admins**, **Trek Staff**, and **Trekkers (Users)**.
 
 ---
 
@@ -16,7 +16,7 @@ TrekFlow is a modern, responsive web application designed for adventure organiza
 
 ## Tech Stack
 
-The application is built using the following mandatory technologies:
+The application is built using the following technologies:
 * **Frontend:** Vue.js 3 (Single Page Application) with Bootstrap CSS.
 * **Backend:** Flask (Python REST API) with SQLite database via SQLAlchemy.
 * **Security:** JSON Web Tokens (JWT) for secure authentication.
