@@ -19,4 +19,10 @@ export default {
   getProfile() {
     return api.get("/user/profile");
   },
+  requestExport() {
+    return api.post("/user/booking-history/export");
+  },
+  getExportStatus(taskId) {
+    return api.get(`/user/booking-history/export/${taskId}`);
+  },
 };

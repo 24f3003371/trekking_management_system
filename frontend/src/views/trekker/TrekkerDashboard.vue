@@ -10,9 +10,19 @@
           <h1 class="h3 fw-bold mb-1 font-display text-white">Welcome, {{ trekkerName }}!</h1>
           <p class="text-xs mb-0">Ready for your next high alpine expedition?</p>
         </div>
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-person-fill text-green fs-5"></i>
-          <span class="fw-semibold text-white-50 text-xs">Trekker Account</span>
+        <div class="d-flex align-items-center gap-3">
+          <button 
+            @click="triggerExport" 
+            :disabled="isExporting" 
+            class="btn btn-green text-xs d-flex align-items-center gap-2 px-3 py-2">
+            <i class="bi bi-file-earmark-arrow-down" v-if="!isExporting"></i>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" v-else></span>
+            <span>{{ isExporting ? 'Exporting CSV...' : 'Export Booking History (CSV)' }}</span>
+          </button>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-person-fill text-green fs-5"></i>
+            <span class="fw-semibold text-white-50 text-xs">Trekker Account</span>
+          </div>
         </div>
       </header>
 
@@ -85,6 +95,10 @@
           <router-link to="/TrekkingHistory" class="text-green text-decoration-none text-xs hover-underline">
             View Trekking History <i class="bi bi-clock-history ms-1"></i>
           </router-link>
+        </div>
+
+        <div v-if="exportError" class="alert alert-danger border-0 bg-danger bg-opacity-10 text-danger p-3 rounded-xl text-xs mb-3">
+          {{ exportError }}
         </div>
 
         <div class="table-responsive">
@@ -340,8 +354,68 @@
 import { ref, computed, onMounted } from 'vue';
 import Sidebar from '@/components/dashboard/Sidebar.vue';
 import { useTrekStore } from '@/store';
+import bookingService from '@/services/bookingService';
+import api from '@/services/api';
 
 const store = useTrekStore();
+
+const isExporting = ref(false);
+const exportError = ref('');
+const exportTaskId = ref(null);
+
+const triggerExport = async () => {
+  isExporting.value = true;
+  exportError.value = '';
+  try {
+    const { data } = await bookingService.requestExport();
+    exportTaskId.value = data.task_id;
+    pollExportStatus();
+  } catch (err) {
+    isExporting.value = false;
+    exportError.value = 'Failed to initiate export. Please try again.';
+  }
+};
+
+const pollExportStatus = async () => {
+  if (!exportTaskId.value) return;
+  try {
+    const { data } = await bookingService.getExportStatus(exportTaskId.value);
+    if (data.status === 'success' || data.status === 'successful') {
+      isExporting.value = false;
+      // Download the file
+      let path = data.download_url;
+      if (path.startsWith('/api')) {
+        path = path.slice(4); // strip prefix '/api' to match baseURL prefix
+      }
+      triggerFileDownload(path);
+    } else if (data.status === 'failed') {
+      isExporting.value = false;
+      exportError.value = data.message || 'Export task failed.';
+    } else {
+      // still pending or running, check again in 1.5 seconds
+      setTimeout(pollExportStatus, 1500);
+    }
+  } catch (err) {
+    isExporting.value = false;
+    exportError.value = 'Error checking export task status.';
+  }
+};
+
+const triggerFileDownload = (path) => {
+  api.get(path, { responseType: 'blob' })
+    .then((response) => {
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `booking-history-${store.currentUser?.id || 'export'}.csv`;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+      alert('Trek Booking History exported and downloaded successfully!');
+    })
+    .catch(() => {
+      exportError.value = 'Failed to download the exported CSV file.';
+    });
+};
 
 onMounted(async () => {
   // Always refresh bookings and treks when dashboard loads so they are current
