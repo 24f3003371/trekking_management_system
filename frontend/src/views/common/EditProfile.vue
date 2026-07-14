@@ -15,6 +15,64 @@
           </button>
         </div>
       </header>
+      <section class="glass-panel p-4 mb-4">
+  <h4 class="fw-bold text-white mb-4">Current Profile Details</h4>
+
+  <div class="row g-4">
+
+    <div class="col-md-6">
+      <div>
+        <small >Username</small>
+        <div >{{ store.currentUser.username }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div >
+        <small>Email</small>
+        <div >{{ store.currentUser.email }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div >
+        <small >First Name</small>
+        <div >{{ store.currentUser.firstname }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div >
+        <small >Last Name</small>
+        <div >{{ store.currentUser.lastname }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div >
+        <small >Phone</small>
+        <div class="profile-value">{{ store.currentUser.phone }}</div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div >
+        <small >Gender</small>
+        <div >
+          {{ store.currentUser.gender || "Not Set" }}
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12">
+      <div >
+        <small>Address</small>
+        <div >{{ store.currentUser.address }}</div>
+      </div>
+    </div>
+
+  </div>
+</section>
 
       <section class="glass-panel p-4 mb-4" style="max-width: 700px;">
         <h3 class="h5 fw-bold mb-4 text-white font-display">Personal Information</h3>
@@ -225,4 +283,5 @@ const goBack = () => {
   display: inline-block;
   animation: spin 1s linear infinite;
 }
+
 </style>

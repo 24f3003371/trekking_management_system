@@ -8,7 +8,7 @@
       <header class="dashboard-header border-bottom border-secondary-subtle pb-3 mb-4">
         <div>
           <h1 class="h3 fw-bold mb-1 font-display text-white">Dashboard</h1>
-          <p class="text-muted text-xs mb-0">Trekking Management Application Overview</p>
+          <p class=" text-xs mb-0">Trekking Management Application Overview</p>
         </div>
         <div class="d-flex align-items-center gap-2">
           <i class="bi bi-person-fill-lock text-green fs-5"></i>
@@ -115,7 +115,7 @@
                 </td>
               </tr>
               <tr v-if="store.recentBookings.length === 0">
-                <td colspan="6" class="text-center text-muted py-4">No recent bookings found.</td>
+                <td colspan="6" class="text-center  py-4">No recent bookings found.</td>
               </tr>
             </tbody>
           </table>
