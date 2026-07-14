@@ -17,7 +17,7 @@ TrekFlow is a  responsive web application developed by Niharika Soni to manage t
 ## Tech Stack
 
 The application is built using the following technologies:
-* **Frontend:** Vue.js 3 (Single Page Application) with Bootstrap CSS.
+* **Frontend:** Vue.js  (Single Page Application) with Bootstrap CSS.
 * **Backend:** Flask (Python REST API) with SQLite database via SQLAlchemy.
 * **Security:** JSON Web Tokens (JWT) for secure authentication.
 * **Caching:** Redis for caching frequently accessed treks and status.
@@ -89,7 +89,7 @@ trekking_management_system/
 
 ### 1. Authentication & Security
 * Users register as a **Trekker** from the signup page.
-* **Admin** and **Staff** cannot self-register; they are created programmatically or by the Admin.
+* **Admin** and **Staff** cannot self-register; Admin is created programmatically and staff is created by Admin.
 * When a user logs in, the backend sends a secure JWT token. The frontend stores this token and includes it in all requests. If the token expires or is invalid, the user is logged out automatically.
 
 ### 2. Admin Capabilities
@@ -170,7 +170,7 @@ redis-server
    *The backend will run on `http://127.0.0.1:5000`.*
 
 ### Step 3: Run the Celery Worker & Scheduler
-Keep your backend running, open a new terminal window, navigate to the root directory, activate the backend virtual environment, and run:
+Keep the backend running, open a new terminal window, navigate to the root directory, activate the backend virtual environment, and run:
 
 1. **Start the Celery Worker** (to execute background tasks like CSV exports):
    ```bash
